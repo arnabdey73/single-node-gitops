@@ -1,0 +1,161 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dell-alerting-rules
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: alerting-rules
+data:
+  dell-hardware-alerts.yml: |
+    groups:
+      - name: dell-hardware
+        rules:
+          # Temperature monitoring alerts
+          - alert: DellHighCPUTemperature
+            expr: node_hwmon_temp_celsius{chip=~".*cpu.*"} > 80
+            for: 2m
+            labels:
+              severity: critical
+              component: cpu
+            annotations:
+              summary: "Dell server CPU temperature is critically high"
+              description: "CPU temperature on {{ $labels.instance }} is {{ $value }}°C (threshold: 80°C)"
+
+          - alert: DellHighAmbientTemperature
+            expr: node_hwmon_temp_celsius{chip=~".*ambient.*"} > 35
+            for: 5m
+            labels:
+              severity: warning
+              component: ambient
+            annotations:
+              summary: "Dell server ambient temperature is high"
+              description: "Ambient temperature on {{ $labels.instance }} is {{ $value }}°C (threshold: 35°C)"
+
+          # Fan monitoring alerts
+          - alert: DellFanFailure
+            expr: node_hwmon_fan_rpm < 100
+            for: 1m
+            labels:
+              severity: critical
+              component: fan
+            annotations:
+              summary: "Dell server fan failure detected"
+              description: "Fan {{ $labels.sensor }} on {{ $labels.instance }} is reporting {{ $value }} RPM (possible failure)"
+
+          - alert: DellFanSpeedHigh
+            expr: node_hwmon_fan_rpm > 8000
+            for: 3m
+            labels:
+              severity: warning
+              component: fan
+            annotations:
+              summary: "Dell server fan speed is unusually high"
+              description: "Fan {{ $labels.sensor }} on {{ $labels.instance }} is running at {{ $value }} RPM (may indicate cooling issues)"
+
+          # IPMI power monitoring
+          - alert: DellHighPowerConsumption
+            expr: node_ipmi_power_watts > 400
+            for: 5m
+            labels:
+              severity: warning
+              component: power
+            annotations:
+              summary: "Dell server power consumption is high"
+              description: "Power consumption on {{ $labels.instance }} is {{ $value }}W (threshold: 400W)"
+
+          - alert: DellPowerSupplyFailure
+            expr: node_ipmi_sensor_state{name=~".*Power Supply.*"} != 0
+            for: 1m
+            labels:
+              severity: critical
+              component: power-supply
+            annotations:
+              summary: "Dell server power supply failure"
+              description: "Power supply {{ $labels.name }} on {{ $labels.instance }} is in failed state"
+
+          # Memory monitoring
+          - alert: DellMemoryErrors
+            expr: increase(node_edac_correctable_errors_total[5m]) > 0
+            for: 1m
+            labels:
+              severity: warning
+              component: memory
+            annotations:
+              summary: "Dell server memory correctable errors detected"
+              description: "Memory correctable errors detected on {{ $labels.instance }}: {{ $value }} errors in last 5 minutes"
+
+          - alert: DellMemoryUncorrectableErrors
+            expr: increase(node_edac_uncorrectable_errors_total[1m]) > 0
+            for: 0m
+            labels:
+              severity: critical
+              component: memory
+            annotations:
+              summary: "Dell server memory uncorrectable errors detected"
+              description: "CRITICAL: Memory uncorrectable errors on {{ $labels.instance }}: {{ $value }} errors"
+
+          # Storage controller monitoring
+          - alert: DellStorageControllerDegraded
+            expr: node_ipmi_sensor_state{name=~".*RAID.*|.*Storage.*"} != 0
+            for: 2m
+            labels:
+              severity: critical
+              component: storage
+            annotations:
+              summary: "Dell server storage controller issue"
+              description: "Storage controller {{ $labels.name }} on {{ $labels.instance }} is in degraded state"
+
+          # System health monitoring
+          - alert: DellSystemHealthDegraded
+            expr: node_ipmi_sensor_state{name=~".*System.*|.*Health.*"} != 0
+            for: 1m
+            labels:
+              severity: warning
+              component: system
+            annotations:
+              summary: "Dell server system health degraded"
+              description: "System health indicator {{ $labels.name }} on {{ $labels.instance }} shows degraded status"
+
+      - name: dell-performance
+        rules:
+          # Performance-related alerts for Dell PowerEdge R540
+          - alert: DellHighCPUUtilization
+            expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+            for: 10m
+            labels:
+              severity: warning
+              component: cpu
+            annotations:
+              summary: "Dell server CPU utilization is very high"
+              description: "CPU utilization on {{ $labels.instance }} is {{ $value }}% (threshold: 90%)"
+
+          - alert: DellHighMemoryUtilization
+            expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+            for: 5m
+            labels:
+              severity: warning
+              component: memory
+            annotations:
+              summary: "Dell server memory utilization is very high"
+              description: "Memory utilization on {{ $labels.instance }} is {{ $value }}% (threshold: 90%)"
+
+          - alert: DellDiskIOLatencyHigh
+            expr: rate(node_disk_io_time_seconds_total[5m]) > 0.8
+            for: 3m
+            labels:
+              severity: warning
+              component: disk
+            annotations:
+              summary: "Dell server disk I/O latency is high"
+              description: "Disk I/O latency on {{ $labels.instance }} device {{ $labels.device }} is high: {{ $value }}"
+
+          - alert: DellNetworkErrors
+            expr: increase(node_network_receive_errs_total[5m]) > 10 or increase(node_network_transmit_errs_total[5m]) > 10
+            for: 2m
+            labels:
+              severity: warning
+              component: network
+            annotations:
+              summary: "Dell server network errors detected"
+              description: "Network errors on {{ $labels.instance }} interface {{ $labels.device }}: {{ $value }} errors in last 5 minutes"

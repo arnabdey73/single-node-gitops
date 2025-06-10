@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-exporter-config
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: node-exporter
+    app.kubernetes.io/part-of: monitoring
+data:
+  config.yaml: |
+    # Node Exporter configuration optimized for Dell PowerEdge R540
+    collectors:
+      enabled:
+        - cpu
+        - cpufreq
+        - diskstats
+        - filesystem
+        - loadavg
+        - meminfo
+        - netdev
+        - netstat
+        - stat
+        - time
+        - hwmon      # Hardware monitoring (temperatures, voltages, fans)
+        - ipmi       # IPMI sensors for Dell servers
+        - thermal_zone # Thermal zone information
+        - pressure   # PSI pressure stall information
+        - systemd    # Systemd service status
+      disabled:
+        - arp
+        - bcache
+        - bonding
+        - conntrack
+        - edac
+        - entropy
+        - fibrechannel
+        - infiniband
+        - nfs
+        - nfsd
+        - rapl
+        - schedstat
+        - sockstat
+        - textfile
+        - timex
+        - udp_queues
+        - uname
+        - vmstat
+        - xfs
+        - zfs
+    
+    # IPMI configuration for Dell iDRAC
+    ipmi:
+      # Enable IPMI sensor monitoring
+      enabled: true
+      # Custom sensor configuration for Dell servers
+      sensors:
+        - "Ambient Temp"
+        - "CPU1 Temp"
+        - "CPU2 Temp"
+        - "Exhaust Temp"
+        - "Inlet Temp"
+        - "Memory Temp"
+        - "PCH Temp"
+        - "System Board Temp"
+        - "Fan1 RPM"
+        - "Fan2 RPM"
+        - "Fan3 RPM"
+        - "Fan4 RPM"
+        - "Power Supply 1"
+        - "Power Supply 2"
+        - "Voltage 1"
+        - "Voltage 2"
+    
+    # Hardware monitoring configuration
+    hwmon:
+      # Monitor all available hardware sensors
+      enabled: true
+      # Ignore specific sensors that may be problematic
+      ignored_sensors:
+        - "acpi-*"
+        - "thermal-*"
+    
+    # Filesystem monitoring
+    filesystem:
+      ignored_mount_points:
+        - "^/(dev|proc|sys|var/lib/docker/.+)($|/)"
+        - "^/var/lib/kubelet/pods/.+"
+        - "^/snap/.+"
+      ignored_fs_types:
+        - "^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-node-exporter-args
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: node-exporter
+    app.kubernetes.io/part-of: monitoring
+data:
+  args: |
+    --path.procfs=/host/proc
+    --path.sysfs=/host/sys
+    --path.rootfs=/host/root
+    --collector.filesystem.mount-points-exclude="^/(dev|proc|sys|var/lib/docker/.+)($|/)"
+    --collector.filesystem.fs-types-exclude="^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
+    --collector.hwmon
+    --collector.ipmi
+    --collector.thermal_zone
+    --collector.systemd
+    --no-collector.arp
+    --no-collector.bcache
+    --no-collector.bonding
+    --no-collector.edac
+    --no-collector.entropy
+    --no-collector.fibrechannel
+    --no-collector.infiniband
+    --no-collector.nfs
+    --no-collector.nfsd
+    --no-collector.rapl
+    --no-collector.textfile
+    --no-collector.timex
+    --no-collector.udp_queues
+    --no-collector.xfs
+    --no-collector.zfs

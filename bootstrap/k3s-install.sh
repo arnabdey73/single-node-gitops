@@ -78,15 +78,22 @@ fi
 export INSTALL_K3S_CHANNEL=stable
 export K3S_KUBECONFIG_MODE="644"
 
-# K3s installation with optimized flags for single node
-log "Installing K3s..."
+# K3s installation with optimized flags for Dell PowerEdge R540
+log "Installing K3s with optimizations for PowerEdge R540..."
 curl -sfL https://get.k3s.io | sh -s - \
     --write-kubeconfig-mode 644 \
     --disable traefik \
     --disable servicelb \
-    --disable metrics-server \
+    --disable local-storage \
     --node-taint CriticalAddonsOnly=true:NoExecute \
-    --node-label node-role.kubernetes.io/master=true
+    --node-label node-role.kubernetes.io/master=true \
+    --kube-controller-manager-arg bind-address=0.0.0.0 \
+    --kube-proxy-arg metrics-bind-address=0.0.0.0 \
+    --kube-scheduler-arg bind-address=0.0.0.0 \
+    --kubelet-arg max-pods=250 \
+    --kubelet-arg node-status-update-frequency=10s \
+    --kubelet-arg system-reserved=cpu=500m,memory=1Gi \
+    --kubelet-arg kube-reserved=cpu=500m,memory=1Gi
 
 # Wait for K3s to be ready
 log "Waiting for K3s to be ready..."

@@ -12,9 +12,11 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configuration
+# Configuration optimized for PowerEdge R540
 BACKUP_DIR="${BACKUP_DIR:-/opt/backups/gitops}"
-BACKUP_RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-7}"
+BACKUP_RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-30}"  # Increased from 7 days
+BACKUP_COMPRESSION="${BACKUP_COMPRESSION:-gzip}"      # Use compression for large storage
+PARALLEL_JOBS="${PARALLEL_JOBS:-4}"                  # Utilize multiple CPU cores for backup
 TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 BACKUP_NAME="gitops-backup-${TIMESTAMP}"
 

@@ -192,6 +192,143 @@ check_disk_space() {
     fi
 }
 
+# Function to check Dell hardware status
+check_dell_hardware() {
+    log_info "Checking Dell hardware status..."
+    
+    # Check if Dell OpenManage is installed and running
+    if command_exists omreport; then
+        # Check system health
+        local system_health=$(omreport system summary 2>/dev/null | grep "Main System Chassis" | awk '{print $NF}' || echo "Unknown")
+        if [ "$system_health" = "Ok" ]; then
+            log_success "Dell system health: $system_health"
+        elif [ "$system_health" = "Unknown" ]; then
+            log_warning "Dell system health: Unable to determine status"
+        else
+            log_error "Dell system health: $system_health"
+        fi
+        
+        # Check storage controller health
+        local storage_health=$(omreport storage controller 2>/dev/null | grep "Status" | head -1 | awk '{print $NF}' || echo "Unknown")
+        if [ "$storage_health" = "Ok" ]; then
+            log_success "Dell storage controller: $storage_health"
+        elif [ "$storage_health" = "Unknown" ]; then
+            log_warning "Dell storage controller: Unable to determine status"
+        else
+            log_error "Dell storage controller: $storage_health"
+        fi
+        
+        # Check memory health
+        local memory_errors=$(omreport chassis memory 2>/dev/null | grep -c "Correctable" || echo "0")
+        if [ "$memory_errors" -eq 0 ]; then
+            log_success "No memory errors detected"
+        else
+            log_warning "Memory correctable errors detected: $memory_errors"
+        fi
+    else
+        log_warning "Dell OpenManage tools not installed - run ./bootstrap/dell-optimizations.sh"
+    fi
+    
+    # Check IPMI functionality
+    if command_exists ipmitool; then
+        if sudo ipmitool sensor list >/dev/null 2>&1; then
+            local temp_sensors=$(sudo ipmitool sensor list | grep -i temp | grep -c "ok" || echo "0")
+            local fan_sensors=$(sudo ipmitool sensor list | grep -i fan | grep -c "ok" || echo "0")
+            
+            if [ "$temp_sensors" -gt 0 ]; then
+                log_success "Temperature sensors functional: $temp_sensors sensors OK"
+            else
+                log_warning "No temperature sensors detected or accessible"
+            fi
+            
+            if [ "$fan_sensors" -gt 0 ]; then
+                log_success "Fan sensors functional: $fan_sensors sensors OK"
+            else
+                log_warning "No fan sensors detected or accessible"
+            fi
+        else
+            log_warning "IPMI sensors not accessible - may need configuration"
+        fi
+    else
+        log_warning "IPMI tools not installed - run ./bootstrap/dell-optimizations.sh"
+    fi
+    
+    # Check CPU temperature thresholds
+    if [ -d "/sys/class/thermal" ]; then
+        local thermal_zones=$(find /sys/class/thermal -name "thermal_zone*" | wc -l)
+        if [ "$thermal_zones" -gt 0 ]; then
+            log_success "Thermal monitoring available: $thermal_zones thermal zones"
+            
+            # Check for critical temperatures
+            local critical_temp=false
+            for zone in /sys/class/thermal/thermal_zone*/temp; do
+                if [ -f "$zone" ]; then
+                    local temp=$(cat "$zone" 2>/dev/null || echo "0")
+                    local temp_celsius=$((temp / 1000))
+                    if [ "$temp_celsius" -gt 80 ]; then
+                        critical_temp=true
+                        break
+                    fi
+                fi
+            done
+            
+            if [ "$critical_temp" = "true" ]; then
+                log_error "Critical CPU temperature detected (>80°C)"
+            else
+                log_success "CPU temperatures within normal range"
+            fi
+        else
+            log_warning "No thermal zones detected"
+        fi
+    fi
+}
+
+# Function to check hardware performance optimizations
+check_hardware_optimizations() {
+    log_info "Checking hardware performance optimizations..."
+    
+    # Check CPU governor
+    if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor" ]; then
+        local governor=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo "unknown")
+        if [ "$governor" = "performance" ]; then
+            log_success "CPU governor set to performance"
+        else
+            log_warning "CPU governor is '$governor', recommend 'performance' for this workload"
+        fi
+    else
+        log_warning "CPU frequency scaling not available or not configured"
+    fi
+    
+    # Check disk scheduler
+    local optimized_disks=0
+    local total_disks=0
+    for disk in /sys/block/sd*/queue/scheduler; do
+        if [ -f "$disk" ]; then
+            total_disks=$((total_disks + 1))
+            local scheduler=$(cat "$disk" 2>/dev/null | grep -o '\[.*\]' | tr -d '[]' || echo "unknown")
+            if [ "$scheduler" = "mq-deadline" ] || [ "$scheduler" = "deadline" ]; then
+                optimized_disks=$((optimized_disks + 1))
+            fi
+        fi
+    done
+    
+    if [ "$total_disks" -gt 0 ]; then
+        if [ "$optimized_disks" -eq "$total_disks" ]; then
+            log_success "All $total_disks disks using optimized scheduler"
+        else
+            log_warning "$optimized_disks/$total_disks disks using optimized scheduler"
+        fi
+    fi
+    
+    # Check system limits
+    local nofile_limit=$(ulimit -n)
+    if [ "$nofile_limit" -ge 65536 ]; then
+        log_success "Open file limit optimized: $nofile_limit"
+    else
+        log_warning "Open file limit may be too low: $nofile_limit (recommend 65536+)"
+    fi
+}
+
 # Main health check function
 main() {
     echo "========================================"
@@ -283,6 +420,12 @@ main() {
     log_info "Using external Git hosting (GitHub/GitLab/etc.)"
     log_success "External Git integration configured"
     
+    # Dell Hardware Monitoring
+    check_dell_hardware
+    
+    # Hardware Performance Optimizations
+    check_hardware_optimizations
+    
     # Storage (Longhorn)
     log_info "Checking storage..."
     
@@ -319,6 +462,9 @@ main() {
     else
         log_warning "sealed-secrets not found"
     fi
+    
+    # Dell hardware monitoring
+    check_dell_hardware
     
     # Summary
     echo ""

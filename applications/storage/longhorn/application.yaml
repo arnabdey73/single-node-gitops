@@ -20,16 +20,15 @@ spec:
           defaultClass: false
           defaultClassReplicaCount: 1
         csi:
-          kubeletRootDir: /var/lib/kubelet
-        defaultSettings:
-          defaultReplicaCount: 1
-          guaranteedEngineManagerCPU: 12
-          guaranteedReplicaManagerCPU: 12
+          kubeletRootDir: /var/lib/kubelet        defaultSettings:
+          defaultReplicaCount: 3
+          guaranteedEngineManagerCPU: 50
+          guaranteedReplicaManagerCPU: 25
           createDefaultDiskLabeledNodes: true
           defaultDataPath: /var/lib/longhorn/
           replicaSoftAntiAffinity: false
-          storageOverProvisioningPercentage: 100
-          storageMinimalAvailablePercentage: 15
+          storageOverProvisioningPercentage: 200
+          storageMinimalAvailablePercentage: 10
           upgradeChecker: false
           defaultLonghornStaticStorageClass: longhorn-static
           backupstorePollInterval: 300
@@ -43,9 +42,9 @@ spec:
           volumeAttachmentRecoveryPolicy: wait
           nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
           allowNodeDrainWithLastHealthyReplica: false
-          mkfsExt4Parameters: ""
+          mkfsExt4Parameters: "-O ^64bit,^metadata_csum"
           disableReplicaRebuild: false
-          replicaReplenishmentWaitInterval: 600
+          replicaReplenishmentWaitInterval: 300
           disableRevisionCounter: true
           systemManagedPodsImagePullPolicy: if-not-present
           allowVolumeCreationWithDegradedAvailability: true

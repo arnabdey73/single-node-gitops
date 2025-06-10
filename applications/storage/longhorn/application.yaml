@@ -1,0 +1,97 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/part-of: single-node-gitops
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.longhorn.io
+    targetRevision: 1.5.1
+    chart: longhorn
+    helm:
+      values: |
+        persistence:
+          defaultClass: false
+          defaultClassReplicaCount: 1
+        csi:
+          kubeletRootDir: /var/lib/kubelet
+        defaultSettings:
+          defaultReplicaCount: 1
+          guaranteedEngineManagerCPU: 12
+          guaranteedReplicaManagerCPU: 12
+          createDefaultDiskLabeledNodes: true
+          defaultDataPath: /var/lib/longhorn/
+          replicaSoftAntiAffinity: false
+          storageOverProvisioningPercentage: 100
+          storageMinimalAvailablePercentage: 15
+          upgradeChecker: false
+          defaultLonghornStaticStorageClass: longhorn-static
+          backupstorePollInterval: 300
+          taintToleration: ""
+          systemManagedComponentsNodeSelector: ""
+          priorityClass: ""
+          autoSalvage: true
+          autoDeletePodWhenVolumeDetachedUnexpectedly: true
+          disableSchedulingOnCordonedNode: true
+          replicaZoneSoftAntiAffinity: true
+          volumeAttachmentRecoveryPolicy: wait
+          nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+          allowNodeDrainWithLastHealthyReplica: false
+          mkfsExt4Parameters: ""
+          disableReplicaRebuild: false
+          replicaReplenishmentWaitInterval: 600
+          disableRevisionCounter: true
+          systemManagedPodsImagePullPolicy: if-not-present
+          allowVolumeCreationWithDegradedAvailability: true
+          autoCleanupSystemGeneratedSnapshot: true
+          concurrentAutomaticEngineUpgradePerNodeLimit: 0
+          backingImageCleanupWaitInterval: 60
+          guaranteedEngineCPU: 0.25
+          guaranteedReplicaCPU: 0.1
+        longhornManager:
+          tolerations:
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+        longhornDriver:
+          tolerations:
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+        longhornUI:
+          tolerations:
+            - key: "node-role.kubernetes.io/master"
+              operator: "Exists"
+              effect: "NoSchedule"
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: longhorn-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

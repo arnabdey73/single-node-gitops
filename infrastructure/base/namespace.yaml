@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/name: monitoring
+    app.kubernetes.io/part-of: single-node-gitops
+  annotations:
+    config.kubernetes.io/description: "Monitoring stack namespace"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gitea
+  labels:
+    app.kubernetes.io/name: gitea
+    app.kubernetes.io/part-of: single-node-gitops
+  annotations:
+    config.kubernetes.io/description: "Git repository hosting namespace"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: storage
+  labels:
+    app.kubernetes.io/name: storage
+    app.kubernetes.io/part-of: single-node-gitops
+  annotations:
+    config.kubernetes.io/description: "Storage system namespace"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: security
+  labels:
+    app.kubernetes.io/name: security
+    app.kubernetes.io/part-of: single-node-gitops
+  annotations:
+    config.kubernetes.io/description: "Security tools namespace"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
+  labels:
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/part-of: single-node-gitops
+  annotations:
+    config.kubernetes.io/description: "Certificate management namespace"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: longhorn-system
+  labels:
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/part-of: single-node-gitops
+  annotations:
+    config.kubernetes.io/description: "Longhorn storage system namespace"

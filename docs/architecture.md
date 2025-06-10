@@ -14,8 +14,8 @@ This document describes the architecture of the single-node GitOps platform.
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 ├─────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
-│  │    Gitea    │  │ cert-manager│  │   Security  │     │
-│  │ Git Hosting │  │    TLS      │  │   Tools     │     │
+│  │   GitHub    │  │ cert-manager│  │   Security  │     │
+│  │ Integration │  │    TLS      │  │   Tools     │     │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 ├─────────────────────────────────────────────────────────┤
 │                 K3s Kubernetes                         │
@@ -52,13 +52,15 @@ This document describes the architecture of the single-node GitOps platform.
 - **Loki**: Log aggregation and querying
 - **AlertManager**: Alert handling and routing
 
-#### Code Management
-- **Gitea**: Self-hosted Git service
+#### External Git Integration
+
+- **GitHub**: Primary Git repository hosting
 - **Features**:
   - Git repository hosting
-  - Web interface
-  - CI/CD integration
-  - Issue tracking
+  - Web interface and collaboration
+  - CI/CD integration capabilities
+  - Issue tracking and project management
+  - Webhook support for ArgoCD integration
 
 #### Storage
 - **Longhorn**: Distributed block storage
@@ -77,8 +79,8 @@ This document describes the architecture of the single-node GitOps platform.
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Git Repo  │───▶│   ArgoCD    │───▶│ Kubernetes  │
-│             │    │             │    │  Cluster    │
+│  GitHub     │───▶│   ArgoCD    │───▶│ Kubernetes  │
+│  Repository │    │             │    │  Cluster    │
 └─────────────┘    └─────────────┘    └─────────────┘
        │                  │                  │
        │                  │                  ▼
@@ -89,8 +91,8 @@ This document describes the architecture of the single-node GitOps platform.
        │                  │
        ▼                  ▼
 ┌─────────────┐    ┌─────────────┐
-│   Gitea     │    │ Monitoring  │
-│             │    │   Stack     │
+│  External   │    │ Monitoring  │
+│  Git SCM    │    │   Stack     │
 └─────────────┘    └─────────────┘
 ```
 

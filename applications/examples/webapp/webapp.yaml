@@ -1,0 +1,279 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: examples
+  labels:
+    app.kubernetes.io/name: examples
+    app.kubernetes.io/part-of: single-node-gitops
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
+  annotations:
+    config.kubernetes.io/description: "Example applications namespace"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: examples
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+      containers:
+      - name: webapp
+        image: nginx:1.25-alpine
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9113
+          name: metrics
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 101
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        - name: html
+          mountPath: /usr/share/nginx/html
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+        - name: var-cache
+          mountPath: /var/cache/nginx
+        - name: var-run
+          mountPath: /var/run
+      volumes:
+      - name: config
+        configMap:
+          name: webapp-config
+      - name: html
+        configMap:
+          name: webapp-html
+      - name: tmp
+        emptyDir: {}
+      - name: var-cache
+        emptyDir: {}
+      - name: var-run
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp
+  namespace: examples
+  labels:
+    app: webapp
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  - port: 9113
+    targetPort: 9113
+    protocol: TCP
+    name: metrics
+  selector:
+    app: webapp
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webapp-config
+  namespace: examples
+data:
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+    }
+    
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+        
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+        
+        access_log /var/log/nginx/access.log main;
+        error_log /var/log/nginx/error.log;
+        
+        sendfile on;
+        keepalive_timeout 65;
+        
+        server {
+            listen 8080;
+            server_name localhost;
+            
+            location / {
+                root /usr/share/nginx/html;
+                index index.html;
+            }
+            
+            location /health {
+                access_log off;
+                return 200 "healthy\n";
+                add_header Content-Type text/plain;
+            }
+            
+            location /ready {
+                access_log off;
+                return 200 "ready\n";
+                add_header Content-Type text/plain;
+            }
+            
+            location /metrics {
+                access_log off;
+                return 200 "# HELP webapp_requests_total Total number of requests\n# TYPE webapp_requests_total counter\nwebapp_requests_total 42\n";
+                add_header Content-Type text/plain;
+            }
+        }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webapp-html
+  namespace: examples
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Single Node GitOps - Example Web App</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 40px;
+                background-color: #f5f5f5;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background-color: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            h1 {
+                color: #333;
+                text-align: center;
+            }
+            .info {
+                background-color: #e8f4fd;
+                padding: 20px;
+                border-radius: 5px;
+                margin: 20px 0;
+            }
+            .status {
+                display: flex;
+                justify-content: space-between;
+                margin: 10px 0;
+            }
+            .green { color: #4CAF50; }
+            .blue { color: #2196F3; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 Single Node GitOps Platform</h1>
+            <h2>Example Web Application</h2>
+            
+            <div class="info">
+                <h3>Application Status</h3>
+                <div class="status">
+                    <span>Health Check:</span>
+                    <span class="green">✅ Healthy</span>
+                </div>
+                <div class="status">
+                    <span>Readiness:</span>
+                    <span class="green">✅ Ready</span>
+                </div>
+                <div class="status">
+                    <span>Deployment:</span>
+                    <span class="blue">🔄 GitOps Managed</span>
+                </div>
+            </div>
+            
+            <h3>Platform Components</h3>
+            <ul>
+                <li><strong>Kubernetes:</strong> K3s lightweight distribution</li>
+                <li><strong>GitOps:</strong> ArgoCD for continuous deployment</li>
+                <li><strong>Monitoring:</strong> Prometheus, Grafana, Loki</li>
+                <li><strong>Storage:</strong> Longhorn distributed storage</li>
+                <li><strong>Security:</strong> cert-manager, sealed-secrets</li>
+            </ul>
+            
+            <h3>Available Endpoints</h3>
+            <ul>
+                <li><a href="/health">Health Check</a></li>
+                <li><a href="/ready">Readiness Check</a></li>
+                <li><a href="/metrics">Prometheus Metrics</a></li>
+            </ul>
+            
+            <div class="info">
+                <p><strong>Note:</strong> This is an example application demonstrating GitOps deployment patterns on a single-node Kubernetes cluster.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: webapp
+  namespace: examples
+  labels:
+    app: webapp
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics

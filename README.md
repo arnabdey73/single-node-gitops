@@ -7,7 +7,7 @@ A complete GitOps-based DevOps platform designed for single-node deployments usi
 - **Lightweight Kubernetes**: K3s for single-node clusters
 - **GitOps Workflow**: ArgoCD for declarative deployments
 - **Monitoring Stack**: Prometheus, Grafana, and Loki
-- **Code Repository**: Gitea for Git hosting
+- **Git Integration**: Works with GitHub and other external Git providers
 - **Storage**: Longhorn for distributed storage
 - **Security**: cert-manager and sealed-secrets
 - **Backup & Recovery**: Automated backup solutions

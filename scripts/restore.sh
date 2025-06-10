@@ -292,14 +292,8 @@ restore_persistent_data() {
         fi
     fi
     
-    # Restore Gitea data
-    if [ -f "$data_dir/gitea-data.tar.gz" ]; then
-        log_info "Restoring Gitea data..."
-        local gitea_pod=$(kubectl get pods -n gitea -l app.kubernetes.io/name=gitea -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
-        if [ -n "$gitea_pod" ]; then
-            cat "$data_dir/gitea-data.tar.gz" | kubectl exec -n gitea "$gitea_pod" -i -- tar xzf - -C / || log_warning "Failed to restore Gitea data"
-        fi
-    fi
+    # Note: External Git repositories (GitHub/GitLab) don't need data restoration
+    log_info "Note: External Git repositories are managed by your Git provider"
     
     log_success "Persistent data restored"
 }

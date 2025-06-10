@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: webapp-example
+  annotations:
+    config.kubernetes.io/local-config: "true"
+
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - configmap.yaml
+  - servicemonitor.yaml
+
+commonLabels:
+  app.kubernetes.io/name: webapp-example
+  app.kubernetes.io/part-of: single-node-gitops
+  app.kubernetes.io/version: "1.0.0"
+
+commonAnnotations:
+  config.kubernetes.io/origin: |
+    configuredIn: applications/examples/webapp/kustomization.yaml
+    configuredBy:
+      apiVersion: kustomize.config.k8s.io/v1beta1
+      kind: Kustomization
+
+images:
+  - name: nginx
+    newTag: "1.25-alpine"

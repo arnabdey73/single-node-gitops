@@ -12,16 +12,6 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: gitea
-  labels:
-    app.kubernetes.io/name: gitea
-    app.kubernetes.io/part-of: single-node-gitops
-  annotations:
-    config.kubernetes.io/description: "Git repository hosting namespace"
----
-apiVersion: v1
-kind: Namespace
-metadata:
   name: storage
   labels:
     app.kubernetes.io/name: storage

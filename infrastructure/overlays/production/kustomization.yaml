@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: production-infrastructure
+  annotations:
+    config.kubernetes.io/local-config: "true"
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - monitoring-namespace-patch.yaml
+  - storage-class-patch.yaml
+
+patches:
+  - target:
+      kind: StorageClass
+      name: longhorn
+    patch: |-
+      - op: replace
+        path: /parameters/numberOfReplicas
+        value: "1"
+      - op: add
+        path: /parameters/dataLocality
+        value: "strict-local"
+
+commonLabels:
+  environment: production
+  
+commonAnnotations:
+  config.kubernetes.io/origin: |
+    configuredIn: infrastructure/overlays/production/kustomization.yaml
+    configuredBy:
+      apiVersion: kustomize.config.k8s.io/v1beta1
+      kind: Kustomization

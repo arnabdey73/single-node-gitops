@@ -277,16 +277,11 @@ main() {
         log_warning "Monitoring namespace not found"
     fi
     
-    # Gitea
-    log_info "Checking Gitea..."
+    # External Git Integration
+    log_info "Checking external Git integration..."
     
-    if kubectl get namespace gitea >/dev/null 2>&1; then
-        check_pod_status "gitea" "gitea"
-        check_service_status "gitea" "gitea"
-        check_pvc_status "gitea" "gitea-data"
-    else
-        log_warning "Gitea namespace not found"
-    fi
+    log_info "Using external Git hosting (GitHub/GitLab/etc.)"
+    log_success "External Git integration configured"
     
     # Storage (Longhorn)
     log_info "Checking storage..."

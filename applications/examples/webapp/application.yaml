@@ -1,11 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: gitea
+  name: webapp-example
   namespace: argocd
   labels:
-    app.kubernetes.io/name: gitea
+    app.kubernetes.io/name: webapp-example
     app.kubernetes.io/part-of: single-node-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,10 +15,10 @@ spec:
   source:
     repoURL: https://github.com/your-org/single-node-gitops.git
     targetRevision: HEAD
-    path: applications/gitops/gitea
+    path: applications/examples/webapp
   destination:
     server: https://kubernetes.default.svc
-    namespace: gitea
+    namespace: examples
   syncPolicy:
     automated:
       prune: true

@@ -6,6 +6,7 @@ A complete GitOps-based DevOps platform designed for single-node deployments usi
 
 - **Lightweight Kubernetes**: K3s for single-node clusters
 - **GitOps Workflow**: ArgoCD for declarative deployments
+- **Enterprise Deployment Platform**: CloudVelocity - One-stop-shop deployment solution
 - **Monitoring Stack**: Prometheus, Grafana, and Loki
 - **Git Integration**: Works with GitHub and other external Git providers
 - **Storage**: Longhorn for distributed storage
@@ -109,6 +110,19 @@ After deployment, you can access various dashboards to monitor and manage your p
   - Dell PowerEdge R540 hardware monitoring
   - Custom application metrics
   - Pre-configured dashboards for K3s and Dell hardware
+
+### CloudVelocity Enterprise (Deployment Platform)
+
+- **URL**: `http://localhost:8080` (after running `./scripts/deployment-platform.sh open`)
+- **Features**:
+  - One-stop-shop application deployment
+  - Enterprise-grade deployment workflows
+  - Real-time monitoring and analytics
+  - GitOps integration with ArgoCD
+  - Template-based deployments
+  - Container registry support
+  - CI/CD pipeline integration
+- **Management**: Use `./scripts/deployment-platform.sh` for platform control
 
 ### ArgoCD (GitOps Management)
 

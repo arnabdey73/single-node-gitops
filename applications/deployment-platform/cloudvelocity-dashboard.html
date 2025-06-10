@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudVelocity Enterprise - Deployment Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0052CC;
+            --primary-gradient: linear-gradient(135deg, #0052CC 0%, #2684FF 100%);
+            --secondary-color: #36B37E;
+            --accent-color: #FF5630;
+            --success-color: #00875A;
+            --warning-color: #FF8B00;
+            --error-color: #DE350B;
+            --dark-bg: #0F1419;
+            --card-bg: #1D2125;
+            --border-color: #2C333A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B3BAC5;
+            --text-muted: #8590A2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .beta-badge {
+            background: var(--secondary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            border-radius: 1px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .deploy-btn {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 82, 204, 0.3);
+        }
+
+        .deploy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 82, 204, 0.4);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .main-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 40px 32px;
+        }
+
+        .hero-section {
+            text-align: left;
+            margin-bottom: 48px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #2684FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 600px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 32px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-actions {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .deploy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .deploy-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deploy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(38, 132, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .deploy-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 82, 204, 0.2);
+        }
+
+        .deploy-card:hover::before {
+            left: 100%;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            position: relative;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-healthy .status-dot { background: var(--success-color); }
+        .status-warning .status-dot { background: var(--warning-color); }
+        .status-error .status-dot { background: var(--error-color); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .project-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .project-item:hover {
+            border-color: var(--primary-color);
+            background: rgba(38, 132, 255, 0.05);
+        }
+
+        .project-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 16px;
+            font-size: 0.9rem;
+        }
+
+        .project-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .project-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .project-url {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .project-url:hover {
+            color: var(--primary-color);
+        }
+
+        .project-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 16px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-live {
+            background: rgba(0, 135, 90, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-building {
+            background: rgba(255, 139, 0, 0.2);
+            color: var(--warning-color);
+        }
+
+        .status-failed {
+            background: rgba(222, 53, 11, 0.2);
+            color: var(--error-color);
+        }
+
+        .metrics-panel {
+            grid-column: 1 / -1;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .metric-trend {
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .trend-up { color: var(--success-color); }
+        .trend-down { color: var(--error-color); }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .footer-brand {
+            text-align: center;
+            margin-top: 60px;
+            padding: 32px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .brand-text {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .version-info {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .deployment-wizard {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 40px;
+            display: none;
+        }
+
+        .wizard-step {
+            margin-bottom: 24px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 16px;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Monaco', monospace;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .deploy-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo-section">
+                <div class="logo">CloudVelocity</div>
+                <span class="beta-badge">Enterprise</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link active">Dashboard</a>
+                <a href="#" class="nav-link">Applications</a>
+                <a href="#" class="nav-link">Analytics</a>
+                <a href="#" class="nav-link">Security</a>
+                <a href="#" class="nav-link">Settings</a>
+            </nav>
+            <div class="user-section">
+                <button class="deploy-btn" onclick="showDeploymentWizard()">Deploy Application</button>
+                <div class="user-avatar">JS</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero-section">
+            <h1 class="hero-title">Enterprise Deployment Platform</h1>
+            <p class="hero-subtitle">
+                Accelerate your development lifecycle with enterprise-grade deployment automation, 
+                comprehensive monitoring, and seamless CI/CD integration. Built for scale, security, and performance.
+            </p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-value">99.99%</div>
+                    <div class="stat-label">Uptime SLA</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">< 30s</div>
+                    <div class="stat-label">Deploy Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">500+</div>
+                    <div class="stat-label">Active Projects</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Support</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-actions">
+            <h2 class="section-title">Quick Deploy</h2>
+            <div class="deploy-grid">
+                <div class="deploy-card" onclick="showGitDeployment()">
+                    <div class="card-icon">🔗</div>
+                    <div class="card-title">Git Repository</div>
+                    <div class="card-description">
+                        Deploy directly from GitHub, GitLab, Azure DevOps, or Bitbucket with automatic webhooks
+                    </div>
+                </div>
+                <div class="deploy-card" onclick="showTemplateDeployment()">
+                    <div class="card-icon">🚀</div>
+                    <div class="card-title">Enterprise Templates</div>
+                    <div class="card-description">
+                        Pre-configured templates for React, Angular, .NET, Java Spring, and microservices
+                    </div>
+                </div>
+                <div class="deploy-card" onclick="showContainerDeployment()">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">Container Registry</div>
+                    <div class="card-description">
+                        Deploy from private container registries with advanced security scanning
+                    </div>
+                </div>
+                <div class="deploy-card" onclick="showCIDeployment()">
+                    <div class="card-icon">⚡</div>
+                    <div class="card-title">CI/CD Pipeline</div>
+                    <div class="card-description">
+                        Integrate with existing Jenkins, Azure DevOps, or GitHub Actions workflows
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="dashboard-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">Active Applications</h3>
+                    <div class="status-indicator status-healthy">
+                        <span class="status-dot"></span>
+                        All Systems Operational
+                    </div>
+                </div>
+                <div class="project-list">
+                    <div class="project-item">
+                        <div class="project-avatar">GRF</div>
+                        <div class="project-info">
+                            <div class="project-name">Grafana Dashboard</div>
+                            <a href="#" class="project-url">monitoring.local</a>
+                        </div>
+                        <div class="project-status">
+                            <span class="status-badge status-live">Live</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn">Monitor</button>
+                            <button class="action-btn">Logs</button>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-avatar">ARG</div>
+                        <div class="project-info">
+                            <div class="project-name">ArgoCD</div>
+                            <a href="#" class="project-url">argocd.local</a>
+                        </div>
+                        <div class="project-status">
+                            <span class="status-badge status-live">Live</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn">Monitor</button>
+                            <button class="action-btn">Logs</button>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-avatar">WEB</div>
+                        <div class="project-info">
+                            <div class="project-name">Example WebApp</div>
+                            <a href="#" class="project-url">webapp.local</a>
+                        </div>
+                        <div class="project-status">
+                            <span class="status-badge status-building">Deploying</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn">Monitor</button>
+                            <button class="action-btn">Logs</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">System Health</h3>
+                    <div class="status-indicator status-healthy">
+                        <span class="status-dot"></span>
+                        Optimal
+                    </div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">2.4M</div>
+                        <div class="metric-label">Requests/Day</div>
+                        <div class="metric-trend trend-up">↗ 12%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">99.98%</div>
+                        <div class="metric-label">Uptime</div>
+                        <div class="metric-trend trend-up">↗ 0.02%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">185ms</div>
+                        <div class="metric-label">Avg Response</div>
+                        <div class="metric-trend trend-down">↘ 15ms</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">28</div>
+                        <div class="metric-label">Deployments</div>
+                        <div class="metric-trend trend-up">↗ 4</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel metrics-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">Infrastructure Metrics</h3>
+                <div class="status-indicator status-healthy">
+                    <span class="status-dot"></span>
+                    All Clusters Healthy
+                </div>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">1</div>
+                    <div class="metric-label">Active Clusters</div>
+                    <div class="metric-trend">Single Node</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">12</div>
+                    <div class="metric-label">Running Pods</div>
+                    <div class="metric-trend trend-up">↗ 2</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">67%</div>
+                    <div class="metric-label">CPU Utilization</div>
+                    <div class="metric-trend trend-down">↘ 5%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">4.2GB</div>
+                    <div class="metric-label">Memory Usage</div>
+                    <div class="metric-trend trend-up">↗ 0.3GB</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">$45</div>
+                    <div class="metric-label">Monthly Cost</div>
+                    <div class="metric-trend trend-down">↘ $5</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0</div>
+                    <div class="metric-label">Security Alerts</div>
+                    <div class="metric-trend">No incidents</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployment Wizard -->
+        <div id="deployment-wizard" class="deployment-wizard">
+            <h2 class="section-title">Deploy New Application</h2>
+            
+            <div class="wizard-step">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Source Configuration</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Repository URL</label>
+                    <input type="text" class="form-input" placeholder="https://github.com/username/repository" id="repo-url">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Branch</label>
+                    <input type="text" class="form-input" placeholder="main" id="branch" value="main">
+                </div>
+            </div>
+
+            <div class="wizard-step">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Application Configuration</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Application Name</label>
+                    <input type="text" class="form-input" placeholder="my-application" id="app-name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Namespace</label>
+                    <input type="text" class="form-input" placeholder="default" id="namespace" value="default">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Path (optional)</label>
+                    <input type="text" class="form-input" placeholder="./manifests" id="path">
+                </div>
+            </div>
+
+            <div class="wizard-step">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Deployment Manifest</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kubernetes Manifest</label>
+                    <textarea class="form-input form-textarea" id="manifest" placeholder="apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: nginx:latest
+        ports:
+        - containerPort: 80"></textarea>
+                </div>
+            </div>
+
+            <button class="deploy-btn" style="width: 100%; margin-top: 24px;" onclick="deployApplication()">
+                Deploy Application
+            </button>
+        </div>
+    </main>
+
+    <footer class="footer-brand">
+        <div class="brand-text">CloudVelocity Enterprise Deployment Platform</div>
+        <div class="version-info">Version 2.1.4 Enterprise Edition | © 2025 Your Company</div>
+    </footer>
+
+    <script>
+        function showDeploymentWizard() {
+            const wizard = document.getElementById('deployment-wizard');
+            wizard.style.display = wizard.style.display === 'none' ? 'block' : 'none';
+            if (wizard.style.display === 'block') {
+                wizard.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showGitDeployment() {
+            showDeploymentWizard();
+        }
+
+        function showTemplateDeployment() {
+            alert('🚀 Enterprise template selector would open here');
+        }
+
+        function showContainerDeployment() {
+            alert('🐳 Container registry connection wizard would start');
+        }
+
+        function showCIDeployment() {
+            alert('⚡ CI/CD pipeline integration setup would begin');
+        }
+
+        function deployApplication() {
+            const appName = document.getElementById('app-name').value;
+            const repoUrl = document.getElementById('repo-url').value;
+            const namespace = document.getElementById('namespace').value;
+            const manifest = document.getElementById('manifest').value;
+
+            if (!appName || !repoUrl) {
+                alert('Please fill in the application name and repository URL');
+                return;
+            }
+
+            // Simulate deployment
+            alert(`🚀 Deploying application "${appName}" from ${repoUrl} to namespace "${namespace}"`);
+            
+            // Reset form
+            document.getElementById('deployment-wizard').style.display = 'none';
+            document.getElementById('app-name').value = '';
+            document.getElementById('repo-url').value = '';
+            document.getElementById('path').value = '';
+            document.getElementById('manifest').value = '';
+        }
+
+        // Simulate real-time data updates
+        function updateMetrics() {
+            const metrics = document.querySelectorAll('.metric-value');
+            metrics.forEach(metric => {
+                if (metric.textContent.includes('ms') || metric.textContent.includes('%')) {
+                    const currentText = metric.textContent;
+                    const number = parseFloat(currentText);
+                    if (!isNaN(number)) {
+                        const variation = (Math.random() - 0.5) * 0.1;
+                        const newValue = (number + variation).toFixed(number < 10 ? 2 : 0);
+                        metric.textContent = currentText.replace(number.toString(), newValue);
+                    }
+                }
+            });
+        }
+
+        // Update metrics every 5 seconds
+        setInterval(updateMetrics, 5000);
+
+        // Simulate deployment status updates
+        function updateDeploymentStatus() {
+            const deployingApp = document.querySelector('.status-building');
+            if (deployingApp && Math.random() > 0.7) {
+                deployingApp.textContent = 'Live';
+                deployingApp.className = 'status-badge status-live';
+            }
+        }
+
+        setInterval(updateDeploymentStatus, 10000);
+    </script>
+</body>
+</html>

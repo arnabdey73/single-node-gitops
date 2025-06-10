@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: deployment-platform
+  labels:
+    name: deployment-platform
+    app.kubernetes.io/name: deployment-platform

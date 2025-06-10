@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deployment-platform-config
+  namespace: deployment-platform
+data:
+  cloudvelocity-dashboard.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CloudVelocity Enterprise - Deployment Platform</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <!-- Content will be updated from the HTML file -->
+    </head>
+    <body>
+        <h1>CloudVelocity Enterprise Dashboard Loading...</h1>
+        <p>The dashboard is being loaded. Please check the full HTML file for complete functionality.</p>
+    </body>
+    </html>

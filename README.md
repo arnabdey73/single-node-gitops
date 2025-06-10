@@ -96,6 +96,90 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
 - Storage controller health monitoring
 - Performance-optimized resource limits
 
+## 🖥️ Dashboard Access
+
+After deployment, you can access various dashboards to monitor and manage your platform:
+
+### Grafana (Monitoring & Metrics)
+
+- **URL**: `http://your-server-ip:30300`
+- **Default Login**: admin / admin (change on first login)
+- **Features**:
+  - Cluster metrics and performance monitoring
+  - Dell PowerEdge R540 hardware monitoring
+  - Custom application metrics
+  - Pre-configured dashboards for K3s and Dell hardware
+
+### ArgoCD (GitOps Management)
+
+- **URL**: `http://your-server-ip:30080`
+- **Login**: admin / `kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d`
+- **Features**:
+  - Application deployment status
+  - Git synchronization monitoring
+  - GitOps workflow management
+  - Application health and sync status
+
+### Kubernetes Dashboard (Cluster Management)
+
+- **URL**: `http://your-server-ip:30443`
+- **Access Token**: `kubectl -n kubernetes-dashboard create token admin-user`
+- **Features**:
+  - Complete cluster overview
+  - Resource management and editing
+  - Pod logs and debugging
+  - YAML resource editing
+
+### Longhorn Storage Dashboard
+
+- **URL**: `http://your-server-ip:30880`
+- **Features**:
+  - Volume management and monitoring
+  - Backup and restore operations
+  - Storage performance metrics
+  - Replica and snapshot management
+
+### Dell OpenManage (Hardware Monitoring)
+
+- **URL**: `https://your-server-ip:1311`
+- **Login**: root / (your system root password)
+- **Features**:
+  - Server hardware health monitoring
+  - Temperature and fan monitoring
+  - Power consumption tracking
+  - RAID controller management
+
+## 📊 Quick Dashboard Access
+
+Use the dashboard access script for easy URL and credential retrieval:
+
+```bash
+# Get all dashboard URLs and credentials
+./scripts/dashboard-access.sh
+
+# Check overall system health
+./scripts/health-check.sh
+```
+
+## ⚡ Pre-configured Features
+
+### Dell PowerEdge R540 Dashboards
+
+- Real-time CPU temperature monitoring
+- Fan speed and failure detection
+- Power consumption tracking
+- Memory health indicators
+- Storage controller status
+- IPMI sensor integration
+
+### Kubernetes Monitoring
+
+- Cluster resource utilization
+- Pod and container metrics
+- Storage volume status
+- Network performance
+- Application deployment health
+
 ## 📁 Directory Structure
 
 ```text
@@ -118,6 +202,8 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
 - `scripts/health-check.sh` - System health verification
 - `scripts/backup.sh` - Backup cluster state
 - `scripts/restore.sh` - Restore from backup
+- `scripts/dashboard-access.sh` - Get all dashboard URLs and credentials
+- `scripts/validate-dell-optimizations.sh` - Validate Dell hardware optimizations
 
 ## 🤝 Contributing
 

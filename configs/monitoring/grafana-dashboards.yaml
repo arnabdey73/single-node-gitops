@@ -1,0 +1,202 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/part-of: monitoring
+data:
+  k3s-cluster-overview.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "K3s Cluster Overview",
+        "tags": ["kubernetes", "k3s", "cluster"],
+        "timezone": "browser",
+        "refresh": "30s",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "panels": [
+          {
+            "id": 1,
+            "title": "Cluster Health",
+            "type": "stat",
+            "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+            "targets": [
+              {
+                "expr": "up{job=\"kubernetes-nodes\"}",
+                "legendFormat": "Node Status",
+                "refId": "A"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "none",
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": 0},
+                    {"color": "green", "value": 1}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 2,
+            "title": "Pod Status Distribution",
+            "type": "piechart",
+            "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+            "targets": [
+              {
+                "expr": "sum by (phase) (kube_pod_status_phase)",
+                "legendFormat": "{{phase}}",
+                "refId": "A"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "title": "CPU Usage",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+            "targets": [
+              {
+                "expr": "100 - (avg by(instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+                "legendFormat": "CPU Usage %",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Percentage",
+                "max": 100,
+                "min": 0
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Memory Usage",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+            "targets": [
+              {
+                "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+                "legendFormat": "Memory Usage %",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Percentage",
+                "max": 100,
+                "min": 0
+              }
+            ]
+          }
+        ]
+      }
+    }
+  
+  dell-hardware-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Dell PowerEdge R540 Hardware Monitor",
+        "tags": ["dell", "hardware", "ipmi", "poweredge"],
+        "timezone": "browser",
+        "refresh": "30s",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "panels": [
+          {
+            "id": 1,
+            "title": "CPU Temperature",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+            "targets": [
+              {
+                "expr": "node_hwmon_temp_celsius{chip=~\"coretemp.*\"}",
+                "legendFormat": "CPU {{chip}} - {{sensor}}",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Temperature (°C)",
+                "min": 0,
+                "max": 100
+              }
+            ],
+            "thresholds": [
+              {
+                "value": 80,
+                "colorMode": "critical",
+                "op": "gt"
+              },
+              {
+                "value": 70,
+                "colorMode": "warning",
+                "op": "gt"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "title": "Fan Speeds",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+            "targets": [
+              {
+                "expr": "node_hwmon_fan_rpm",
+                "legendFormat": "Fan {{chip}} - {{sensor}}",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "RPM",
+                "min": 0
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Power Consumption",
+            "type": "singlestat",
+            "gridPos": {"h": 8, "w": 6, "x": 0, "y": 8},
+            "targets": [
+              {
+                "expr": "node_hwmon_power_average_watt",
+                "legendFormat": "Power (W)",
+                "refId": "A"
+              }
+            ],
+            "valueName": "current",
+            "format": "watt",
+            "thresholds": "300,400"
+          },
+          {
+            "id": 4,
+            "title": "System Health",
+            "type": "table",
+            "gridPos": {"h": 8, "w": 18, "x": 6, "y": 8},
+            "targets": [
+              {
+                "expr": "node_ipmi_sensor_state",
+                "legendFormat": "{{name}}",
+                "refId": "A",
+                "format": "table",
+                "instant": true
+              }
+            ]
+          }
+        ]
+      }
+    }

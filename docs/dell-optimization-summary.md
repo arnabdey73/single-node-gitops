@@ -10,15 +10,15 @@
 
 ### 2. Performance Optimizations
 - **CPU Governor**: Set to performance mode for maximum throughput
-- **Memory Management**: Optimized for 32GB RAM with enterprise workloads
-- **Storage I/O**: mq-deadline scheduler for enterprise SSD/HDD performance
+- **Memory Management**: Optimized for 32GB RAM with production workloads
+- **Storage I/O**: mq-deadline scheduler for optimized SSD/HDD performance
 - **Network Tuning**: BBR congestion control and increased buffer sizes
 
 ### 3. Kubernetes Enhancements
 - **Resource Limits**: Increased CPU/memory allocations for all components
 - **Pod Limits**: Increased to 250 pods per node
 - **Storage Allocation**: Enhanced PVC sizes (50GB Prometheus, 20GB Grafana)
-- **Replica Counts**: Increased Longhorn replicas to 3 for better redundancy
+- **Storage**: Simplified with local-path provisioner for reliable local storage
 
 ### 4. Monitoring Stack Improvements
 - **Hardware Sensors**: Node exporter with IPMI and hwmon collectors
@@ -41,7 +41,7 @@
 | Prometheus Memory | 2GB limit | 8GB limit | 4x increase |
 | Grafana Memory | 1GB limit | 2GB limit | 2x increase |
 | Storage Retention | 15 days | 15 days | Same |
-| Longhorn Replicas | 1 | 3 | 3x redundancy |
+| Storage Solution | Longhorn | local-path | Simplified storage |
 | Network Buffers | Default | 64MB | ~16x increase |
 | Open File Limit | 1024 | 65536 | 64x increase |
 | Max Pods | 110 | 250 | 2.3x increase |
@@ -79,8 +79,8 @@
 
 ### For Dell PowerEdge R540 (16 cores, 32GB RAM):
 - ✅ **CPU Utilization**: Optimized for sustained high-performance workloads
-- ✅ **Memory Usage**: Efficient allocation for enterprise containerized applications
-- ✅ **Storage Performance**: Enterprise-grade I/O optimization
+- ✅ **Memory Usage**: Efficient allocation for containerized applications
+- ✅ **Storage Performance**: Optimized I/O configuration
 - ✅ **Network Throughput**: High-bandwidth networking with minimal latency
 - ✅ **Hardware Monitoring**: Complete visibility into server health
 - ✅ **Scalability**: Support for 250+ pods in single-node configuration
@@ -129,7 +129,7 @@ kubectl apply -f applications/
 - **ArgoCD**: `https://your-server-ip:8080` (admin/get-initial-password)
 - **Grafana**: `https://your-server-ip:3000` (admin/admin123)
 - **Dell OpenManage**: `https://your-server-ip:1311` (root/system-password)
-- **Longhorn UI**: `https://your-server-ip/longhorn-ui`
+
 
 ### 5. Ongoing Maintenance
 - Monitor hardware health via Dell OpenManage and Grafana
@@ -137,16 +137,16 @@ kubectl apply -f applications/
 - Periodic validation with `scripts/validate-dell-optimizations.sh`
 - System health checks with `scripts/health-check.sh`
 
-## 🏆 Enterprise-Ready Features
+## 🏆 Production-Ready Features
 
 Your Dell PowerEdge R540 GitOps platform now includes:
 
-1. **Enterprise Hardware Monitoring** - Complete visibility
+1. **Hardware Monitoring** - Complete visibility
 2. **High-Performance Configuration** - Optimized for your hardware
-3. **Production-Grade Storage** - Longhorn with 3-replica redundancy
+3. **Simple Storage** - local-path provisioner for reliable local storage
 4. **Comprehensive Alerting** - Hardware and application monitoring
 5. **Disaster Recovery** - Automated backup and restore capabilities
-6. **Security Hardening** - Enterprise security best practices
+6. **Security Hardening** - Security best practices
 7. **Scalability** - Optimized for high-density workloads
 8. **Observability** - Complete monitoring and logging stack
 
@@ -163,4 +163,4 @@ With these optimizations, your Dell PowerEdge R540 should achieve:
 
 **Platform Status**: ✅ Production-Ready for Dell PowerEdge R540
 **Last Updated**: Applied comprehensive Dell PowerEdge R540 optimizations
-**Next Action**: Deploy and enjoy your enterprise-grade single-node GitOps platform!
+**Next Action**: Deploy and enjoy your production-ready single-node GitOps platform!

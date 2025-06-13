@@ -244,7 +244,7 @@ data:
                 <li><strong>Kubernetes:</strong> K3s lightweight distribution</li>
                 <li><strong>GitOps:</strong> ArgoCD for continuous deployment</li>
                 <li><strong>Monitoring:</strong> Prometheus, Grafana, Loki</li>
-                <li><strong>Storage:</strong> Longhorn distributed storage</li>
+                <li><strong>Storage:</strong> Local-path persistent storage</li>
                 <li><strong>Security:</strong> cert-manager, sealed-secrets</li>
             </ul>
             

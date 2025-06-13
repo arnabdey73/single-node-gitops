@@ -72,13 +72,13 @@ install_dell_openmanage() {
     log_success "Dell OpenManage tools installed"
 }
 
-# Optimize disk scheduler for enterprise storage
+# Optimize disk scheduler for high-performance storage
 optimize_disk_scheduler() {
-    log "Optimizing disk scheduler for enterprise storage..."
+    log "Optimizing disk scheduler for high-performance storage..."
     
     # Create udev rule for disk scheduler
     cat << 'EOF' | sudo tee /etc/udev/rules.d/60-scheduler.rules
-# Set I/O scheduler for SSDs and enterprise drives
+# Set I/O scheduler for SSDs and high-performance drives
 ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
 ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="mq-deadline"
 ACTION=="add|change", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="mq-deadline"

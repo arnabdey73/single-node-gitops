@@ -54,25 +54,7 @@ spec:
       name: https
   selector:
     app.kubernetes.io/name: kubernetes-dashboard
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: longhorn-frontend-nodeport
-  namespace: longhorn-system
-  labels:
-    app.kubernetes.io/name: longhorn
-    app.kubernetes.io/component: nodeport
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      targetPort: 8000
-      nodePort: 30880
-      protocol: TCP
-      name: http
-  selector:
-    app: longhorn-ui
+
 ---
 apiVersion: v1
 kind: Service

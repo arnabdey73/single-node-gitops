@@ -10,7 +10,7 @@ This document describes the architecture of the single-node GitOps platform.
 ├─────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
 │  │   ArgoCD    │  │  Monitoring │  │   Storage   │     │
-│  │   GitOps    │  │   Stack     │  │  Longhorn   │     │
+│  │   GitOps    │  │   Stack     │  │ Local-path  │     │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 ├─────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
@@ -63,7 +63,7 @@ This document describes the architecture of the single-node GitOps platform.
   - Webhook support for ArgoCD integration
 
 #### Storage
-- **Longhorn**: Distributed block storage
+- **Local-path Provisioner**: Simple local storage
 - **Features**:
   - Persistent volume management
   - Backup and restore
@@ -112,11 +112,9 @@ This document describes the architecture of the single-node GitOps platform.
 
 ### Storage Classes
 - **local-path**: Local host path storage (default)
-- **longhorn**: Distributed block storage
-- **longhorn-static**: Static provisioning
 
 ### Persistent Volumes
-- **Database Storage**: Longhorn volumes
+- **Database Storage**: Local path volumes
 - **Log Storage**: Local path volumes
 - **Backup Storage**: External mounted volumes
 

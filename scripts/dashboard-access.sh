@@ -153,17 +153,12 @@ main() {
     fi
     echo
     
-    # Longhorn Storage Dashboard
-    header "💾 Longhorn (Storage Management)"
-    if check_service "longhorn-system" "longhorn-frontend"; then
-        local longhorn_url=$(get_service_url "longhorn-system" "longhorn-frontend" "8000")
-        success "Status: Running"
-        info "URL: $longhorn_url"
-        info "Features: Volume management, backup status, storage metrics"
-        info "Use: Monitor storage health, manage backups, resize volumes"
-    else
-        warn "Longhorn dashboard not found or not running"
-    fi
+    # Storage Dashboard section 
+    header "💾 Storage (Local-path)"
+    info "Using local-path provisioner for storage (no UI available)"
+    info "PVs are stored in /var/lib/rancher/k3s/storage on the node"
+    info "Features: Simple local storage without management overhead"
+    info "Use: Check storage usage with: df -h /var/lib/rancher/k3s/storage"
     echo
     
     # Prometheus (Direct Access)
@@ -220,7 +215,7 @@ main() {
     check_service "monitoring" "grafana" && ((running_services++)) || true
     check_service "argocd" "argocd-server" && ((running_services++)) || true
     check_service "kubernetes-dashboard" "kubernetes-dashboard" && ((running_services++)) || true
-    check_service "longhorn-system" "longhorn-frontend" && ((running_services++)) || true
+    # Local-path provisioner doesn't have a UI service
     check_service "monitoring" "prometheus" && ((running_services++)) || true
     
     if [ $running_services -eq $total_services ]; then

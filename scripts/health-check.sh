@@ -23,7 +23,20 @@ log_info() {
 }
 
 log_success() {
-    echo -e "${GREEN}[PASS]${NC} $1"
+    echo -    # Storage (local-path)
+    log_section "Storage"
+    
+    # Verify local-path storage class exists
+    if kubectl get storageclass local-path >/dev/null 2>&1; then
+        log_success "Local-path storage class ready"
+    else
+        log_warning "Local-path storage class not found"
+    fi
+    
+    # Check PVCs and PVs
+    local pvc_count=$(kubectl get pvc --all-namespaces -o json | jq '.items | length')
+    local pv_count=$(kubectl get pv -o json | jq '.items | length')
+    log_info "PVCs: ${pvc_count}, PVs: ${pv_count}"}[PASS]${NC} $1"
     ((CHECKS_PASSED++))
 }
 
@@ -179,15 +192,15 @@ check_disk_space() {
         log_success "Root filesystem usage: ${disk_usage}%"
     fi
     
-    # Check if longhorn directory exists and check its usage
-    if [ -d "/var/lib/longhorn" ]; then
-        local longhorn_usage=$(df /var/lib/longhorn | tail -1 | awk '{print $5}' | sed 's/%//')
-        if [ "$longhorn_usage" -gt 90 ]; then
-            log_error "Longhorn storage usage: ${longhorn_usage}% (critical)"
-        elif [ "$longhorn_usage" -gt 80 ]; then
-            log_warning "Longhorn storage usage: ${longhorn_usage}% (warning)"
+    # Check if local-path storage directory exists and check its usage
+    if [ -d "/var/lib/rancher/k3s/storage" ]; then
+        local storage_usage=$(df /var/lib/rancher/k3s/storage | tail -1 | awk '{print $5}' | sed 's/%//')
+        if [ "$storage_usage" -gt 90 ]; then
+            log_error "Local storage usage: ${storage_usage}% (critical)"
+        elif [ "$storage_usage" -gt 80 ]; then
+            log_warning "Local storage usage: ${storage_usage}% (warning)"
         else
-            log_success "Longhorn storage usage: ${longhorn_usage}%"
+            log_success "Local storage usage: ${storage_usage}%"
         fi
     fi
 }
@@ -426,15 +439,14 @@ main() {
     # Hardware Performance Optimizations
     check_hardware_optimizations
     
-    # Storage (Longhorn)
+    # Storage (local-path)
     log_info "Checking storage..."
     
-    if kubectl get namespace longhorn-system >/dev/null 2>&1; then
-        check_pod_status "longhorn-system" "longhorn-manager"
-        check_pod_status "longhorn-system" "longhorn-driver-deployer"
-        check_pod_status "longhorn-system" "longhorn-ui"
+    # Check if local-path storage class exists
+    if kubectl get storageclass local-path >/dev/null 2>&1; then
+        log_success "Local-path storage class exists"
     else
-        log_warning "Longhorn namespace not found"
+        log_warning "Local-path storage class not found"
     fi
     
     # Check storage classes

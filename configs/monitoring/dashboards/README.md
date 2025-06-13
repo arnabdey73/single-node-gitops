@@ -18,14 +18,14 @@ This directory contains Grafana dashboard templates optimized for Dell PowerEdge
   - CPU utilization with thermal monitoring
   - Memory usage and health
   - Network throughput optimization
-  - Disk I/O performance with enterprise features
+  - Disk I/O performance optimization
 
-### 3. Enterprise Resource Monitoring
-- **File**: `enterprise-resources.json`
+### 3. Resource Monitoring
+- **File**: `resources.json`
 - **Features**:
   - Kubernetes resource utilization optimized for 32GB RAM
   - Container performance with high-density workloads
-  - Storage performance metrics for Longhorn with 3 replicas
+  - Storage performance metrics for local-path provisioner
   - Network optimization monitoring
 
 ## Import Instructions

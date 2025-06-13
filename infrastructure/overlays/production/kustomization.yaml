@@ -11,13 +11,8 @@ resources:
 
 patchesStrategicMerge:
   - monitoring-namespace-patch.yaml
-  - storage-class-patch.yaml
 
 patches:
-  - target:
-      kind: StorageClass
-      name: longhorn
-    patch: |-
       - op: replace
         path: /parameters/numberOfReplicas
         value: "1"

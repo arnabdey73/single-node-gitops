@@ -1,10 +1,10 @@
-# CloudVelocity Enterprise Deployment Platform
+# CloudVelocity POC Deployment Platform
 
-A proprietary, enterprise-grade deployment platform that provides a one-stop-shop solution for application deployment, monitoring, and management. Built on top of your existing GitOps infrastructure with ArgoCD and Kubernetes.
+A proprietary, POC-grade deployment platform that provides a one-stop-shop solution for application deployment, monitoring, and management. Built on top of your existing GitOps infrastructure with ArgoCD and Kubernetes.
 
 ## 🚀 Features
 
-### Enterprise Deployment Capabilities
+### POC Deployment Capabilities
 - **One-Click Deployment** from Git repositories
 - **Template-Based Deployment** with pre-configured frameworks
 - **Container Registry Integration** with security scanning
@@ -17,7 +17,7 @@ A proprietary, enterprise-grade deployment platform that provides a one-stop-sho
 - **Git-Driven** - All configurations stored in Git for version control
 - **Rollback Support** - Easy rollback to previous deployments
 
-### Enterprise Monitoring
+### POC Monitoring
 - **Real-time Metrics** - CPU, memory, network, and application metrics
 - **SLA Monitoring** - 99.99% uptime tracking and reporting
 - **Cost Analytics** - Resource usage and cost optimization insights
@@ -27,7 +27,7 @@ A proprietary, enterprise-grade deployment platform that provides a one-stop-sho
 - **Modern Interface** - Clean, professional dashboard design
 - **Responsive Design** - Works on desktop, tablet, and mobile
 - **Real-time Updates** - Live metrics and status updates
-- **Enterprise Branding** - Customizable for internal sales presentations
+- **POC Branding** - Customizable for technical demonstrations
 
 ## 📋 Prerequisites
 
@@ -91,7 +91,7 @@ The platform supports multiple deployment methods:
 - Deploy with one click
 
 #### 2. Template-Based Deployment
-- Choose from enterprise templates:
+- Choose from POC templates:
   - React applications
   - Angular applications
   - .NET applications
@@ -120,7 +120,7 @@ The dashboard provides comprehensive monitoring:
 - **Cost Management** - Resource costs and optimization
 - **Security Monitoring** - Vulnerability scanning and compliance
 
-### Enterprise Features
+### POC Features
 
 - **SLA Reporting** - 99.99% uptime guarantees
 - **24/7 Support Integration** - Built-in support channels
@@ -128,14 +128,14 @@ The dashboard provides comprehensive monitoring:
 - **Multi-tenant Support** - Department and team isolation
 - **Role-based Access Control** - Fine-grained permissions
 
-## 🎨 Customization for Internal Sales
+## 🎨 Customization
 
-The platform is designed to look proprietary and enterprise-grade for internal customer presentations:
+The platform is designed to look proprietary and POC-grade for technical demonstrations:
 
 ### Branding Elements
-- **CloudVelocity Enterprise** brand name
+- **CloudVelocity POC** brand name
 - **Professional color scheme** with corporate blue palette
-- **Enterprise badges** and version information
+- **POC badges** and version information
 - **SLA guarantees** prominently displayed
 - **Cost savings** metrics highlighted
 
@@ -144,7 +144,7 @@ The platform is designed to look proprietary and enterprise-grade for internal c
 - Security and compliance focus
 - Scalability indicators (500+ active projects)
 - Professional terminology throughout
-- Enterprise-grade UI/UX design
+- POC-grade UI/UX design
 
 ### Customization Options
 1. **Update branding** in `cloudvelocity-dashboard.html`
@@ -210,16 +210,16 @@ The platform integrates with your existing monitoring stack:
 
 ## 🤝 Support
 
-For enterprise support and customization:
+For POC support and customization:
 - Internal IT Team: [Your Contact Info]
 - Platform Documentation: This README
 - Troubleshooting: Check logs with `./scripts/deployment-platform.sh logs`
 
 ## 📄 License
 
-Enterprise License - Internal Use Only
+POC License - Internal Use Only
 © 2025 Your Company Name
 
 ---
 
-**CloudVelocity Enterprise** - Accelerating Development, Simplifying Deployment
+**CloudVelocity POC** - Accelerating Development, Simplifying Deployment

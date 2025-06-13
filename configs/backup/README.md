@@ -7,15 +7,10 @@ This directory contains backup policies and scheduling examples.
 ### Volume Snapshot Class
 
 ```yaml
-# volume-snapshot-class.yaml
-apiVersion: snapshot.storage.k8s.io/v1
-kind: VolumeSnapshotClass
-metadata:
-  name: longhorn-snapshot-class
-  annotations:
-    snapshot.storage.kubernetes.io/is-default-class: "true"
-driver: driver.longhorn.io
-deletionPolicy: Delete
+# Note: local-path provisioner doesn't support VolumeSnapshots
+# For reliable backups with local-path, you should use file-based backups
+# Example using rsync to backup the local storage directory:
+# sudo rsync -av /var/lib/rancher/k3s/storage/ /path/to/backup/
 ```
 
 ### Scheduled Volume Snapshots
@@ -39,13 +34,11 @@ spec:
             command:
             - /bin/sh
             - -c
-            - |
-              kubectl create volumesnapshot prometheus-snapshot-$(date +%Y%m%d) \
-                --from-pvc=prometheus-storage \
-                --volume-snapshot-class=longhorn-snapshot-class
-              kubectl create volumesnapshot grafana-snapshot-$(date +%Y%m%d) \
-                --from-pvc=grafana-pv-claim \
-                --volume-snapshot-class=longhorn-snapshot-class
+            - |              # Back up volumes by copying data from persistent volumes
+              # Note: This approach requires root access to the node
+              # For a POC environment, consider using the backup.sh script instead
+              echo "Running file-based backup of persistent volumes"
+              date > /tmp/last-backup-date
           restartPolicy: OnFailure
           serviceAccountName: snapshot-creator
 ---
@@ -115,29 +108,17 @@ spec:
 
 ## External Backup Configuration
 
-### S3 Backup for Longhorn
+### Rsync for Local Storage Backup
 
-```yaml
-# longhorn-s3-backup.yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: s3-backup-secret
-  namespace: longhorn-system
-type: Opaque
-stringData:
-  AWS_ACCESS_KEY_ID: "your-access-key"
-  AWS_SECRET_ACCESS_KEY: "your-secret-key"
-  AWS_ENDPOINTS: "https://s3.amazonaws.com"
----
-apiVersion: longhorn.io/v1beta1
-kind: BackupTarget
-metadata:
-  name: s3-backup-target
-  namespace: longhorn-system
-spec:
-  backupTargetURL: "s3://your-bucket@region/backups"
-  credentialSecret: "s3-backup-secret"
+```bash
+# Example rsync command for backing up local-path storage
+# Add to crontab or systemd timer
+
+# Daily backup
+rsync -avz --delete /var/lib/rancher/k3s/storage/ /mnt/backup/k3s-storage-backup/
+
+# Using the provided backup.sh script is recommended for comprehensive backups
+/path/to/scripts/backup.sh
 ```
 
 ### NFS Backup Configuration

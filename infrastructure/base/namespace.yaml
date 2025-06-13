@@ -38,13 +38,4 @@ metadata:
     app.kubernetes.io/part-of: single-node-gitops
   annotations:
     config.kubernetes.io/description: "Certificate management namespace"
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: longhorn-system
-  labels:
-    app.kubernetes.io/name: longhorn
-    app.kubernetes.io/part-of: single-node-gitops
-  annotations:
-    config.kubernetes.io/description: "Longhorn storage system namespace"
+

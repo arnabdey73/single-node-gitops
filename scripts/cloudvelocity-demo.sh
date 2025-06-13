@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudVelocity Enterprise Deployment Platform Demo Script
+# CloudVelocity POC Deployment Platform Demo Script
 # This script demonstrates the platform's capabilities for internal customers
 
 set -e
@@ -58,7 +58,7 @@ pause_for_demo() {
 # Demo functions
 show_intro() {
     clear
-    title "CloudVelocity Enterprise Deployment Platform Demo"
+    title "CloudVelocity POC Deployment Platform Demo"
     cat << 'EOF'
 
    ________                ____   ____     __           _ __       
@@ -67,17 +67,17 @@ show_intro() {
 / /___/ / /_/ / /_/ / /_/ /    | | /  __/ / /_/ / /__/ / /_/ /_/ / 
 \____/_/\____/\__,_/\__,_/     |_| \___/_/\____/\___/_/\__/\__, /  
                                                           /____/   
-                  Enterprise Deployment Platform
+                  POC Deployment Platform
 
 EOF
 
-    echo -e "${CYAN}Welcome to the CloudVelocity Enterprise Demo!${NC}"
+    echo -e "${CYAN}Welcome to the CloudVelocity POC Demo!${NC}"
     echo ""
     echo "This demo will showcase:"
     echo "• 🚀 One-click application deployment"
     echo "• 📊 Real-time monitoring and analytics"
     echo "• 🔄 GitOps integration with ArgoCD"
-    echo "• 🎯 Enterprise-grade features"
+    echo "• 🎯 POC-grade features"
     echo "• 💼 Professional dashboard interface"
     
     pause_for_demo
@@ -115,7 +115,7 @@ check_prerequisites() {
 }
 
 deploy_platform() {
-    title "Deploying CloudVelocity Enterprise Platform"
+    title "Deploying CloudVelocity POC Platform"
     
     log "Starting deployment platform..."
     if $PLATFORM_SCRIPT start; then
@@ -126,7 +126,7 @@ deploy_platform() {
     fi
     
     subtitle "Platform Features Deployed"
-    echo "✅ Enterprise-grade web interface"
+    echo "✅ POC-grade web interface"
     echo "✅ Real-time metrics and monitoring"
     echo "✅ GitOps integration with ArgoCD"
     echo "✅ Application deployment workflows"
@@ -153,7 +153,7 @@ show_platform_status() {
 }
 
 demo_deployment_workflow() {
-    title "Enterprise Deployment Workflow Demo"
+    title "POC Deployment Workflow Demo"
     
     subtitle "Creating Demo Application"
     
@@ -243,7 +243,7 @@ show_monitoring_integration() {
     echo "   • Request/Response times"
     echo "   • Throughput and latency"
     echo "   • Error rates and SLA tracking"
-    echo "   • Cost optimization insights"
+    echo "   • Performance optimization insights"
     
     subtitle "Integration Points"
     echo "✅ Prometheus metrics collection"
@@ -255,9 +255,9 @@ show_monitoring_integration() {
 }
 
 open_platform_dashboard() {
-    title "Accessing CloudVelocity Enterprise Dashboard"
+    title "Accessing CloudVelocity POC Dashboard"
     
-    log "The platform dashboard provides a modern, enterprise-grade interface for:"
+    log "The platform dashboard provides a modern, POC-grade interface for:"
     echo ""
     echo "🎯 One-Stop Application Deployment:"
     echo "   • Git repository integration"
@@ -267,7 +267,7 @@ open_platform_dashboard() {
     echo ""
     echo "📊 Real-time Analytics:"
     echo "   • Performance metrics and SLA monitoring"
-    echo "   • Cost analysis and optimization"
+    echo "   • Performance analysis and optimization"
     echo "   • Security compliance tracking"
     echo "   • Resource utilization insights"
     echo ""
@@ -278,7 +278,7 @@ open_platform_dashboard() {
     echo "   • Approval workflows"
     
     echo ""
-    log "Opening CloudVelocity Enterprise Dashboard..."
+    log "Opening CloudVelocity POC Dashboard..."
     echo "This will start port forwarding and open the dashboard in your browser."
     
     pause_for_demo
@@ -295,7 +295,7 @@ open_platform_dashboard() {
     echo "1. 🚀 Quick Deploy section with multiple options"
     echo "2. 📊 Real-time metrics and system health"
     echo "3. 📋 Active applications management"
-    echo "4. 🔧 Enterprise configuration options"
+    echo "4. 🔧 POC configuration options"
     echo "5. 📈 Analytics and performance insights"
     
     echo ""
@@ -307,19 +307,19 @@ open_platform_dashboard() {
     success "Dashboard session ended"
 }
 
-show_enterprise_features() {
-    title "Enterprise Features Showcase"
+show_poc_features() {
+    title "POC Features Showcase"
     
-    subtitle "🏢 Enterprise-Grade Capabilities"
+    subtitle "🏢 POC-Grade Capabilities"
     echo "✅ 99.99% Uptime SLA guarantee"
-    echo "✅ 24/7 Enterprise support integration"
+    echo "✅ POC support integration"
     echo "✅ SOC2, ISO27001, GDPR compliance tracking"
     echo "✅ Multi-tenant support with RBAC"
     echo "✅ Advanced security scanning and monitoring"
-    echo "✅ Cost optimization and resource management"
+    echo "✅ Performance optimization and resource management"
     
     subtitle "🎯 Business Value Proposition"
-    echo "💰 Cost Savings:"
+    echo "� Performance Benefits:"
     echo "   • Reduced deployment time from hours to minutes"
     echo "   • Automated scaling and resource optimization"
     echo "   • Reduced operational overhead"
@@ -377,7 +377,7 @@ cleanup_demo() {
     rm -f /tmp/demo-app.yaml
     
     echo ""
-    echo -e "${CYAN}The CloudVelocity Enterprise platform remains deployed and ready for use.${NC}"
+    echo -e "${CYAN}The CloudVelocity POC platform remains deployed and ready for use.${NC}"
     echo "To stop the platform: $PLATFORM_SCRIPT stop"
     echo "To restart the platform: $PLATFORM_SCRIPT start"
     echo "To access the dashboard: $PLATFORM_SCRIPT open"
@@ -408,7 +408,7 @@ show_next_steps() {
     
     subtitle "💼 Business Case Summary"
     echo "• Deployment time reduction: 85% (hours → minutes)"
-    echo "• Operational cost savings: 40% through automation"
+    echo "• Operational efficiency: Enhanced through automation"
     echo "• Developer productivity increase: 60%"
     echo "• Security compliance: 100% automated scanning"
     echo "• ROI timeline: 6 months"
@@ -416,7 +416,7 @@ show_next_steps() {
     subtitle "🤝 Support and Training"
     echo "✅ Comprehensive documentation and runbooks"
     echo "✅ Team training and knowledge transfer"
-    echo "✅ 24/7 enterprise support integration"
+    echo "✅ POC support integration"
     echo "✅ Regular platform updates and maintenance"
     
     pause_for_demo
@@ -445,9 +445,8 @@ main() {
             ;;
         dashboard)
             open_platform_dashboard
-            ;;
-        features)
-            show_enterprise_features
+            ;;        features)
+            show_poc_features
             ;;
         gitops)
             demonstrate_gitops_integration
@@ -465,14 +464,13 @@ main() {
             show_platform_status
             demo_deployment_workflow
             show_monitoring_integration
-            open_platform_dashboard
-            show_enterprise_features
+            open_platform_dashboard            show_poc_features
             demonstrate_gitops_integration
             show_next_steps
             cleanup_demo
             ;;
         *)
-            echo "CloudVelocity Enterprise Deployment Platform Demo"
+            echo "CloudVelocity POC Deployment Platform Demo"
             echo ""
             echo "Usage: $0 [command]"
             echo ""
@@ -485,7 +483,7 @@ main() {
             echo "  workflow    - Demo deployment workflow"
             echo "  monitoring  - Show monitoring integration"
             echo "  dashboard   - Open platform dashboard"
-            echo "  features    - Showcase enterprise features"
+            echo "  features    - Showcase POC features"
             echo "  gitops      - Demonstrate GitOps integration"
             echo "  nextsteps   - Show implementation roadmap"
             echo "  cleanup     - Clean up demo resources"

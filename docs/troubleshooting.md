@@ -115,27 +115,27 @@ kubectl get storageclass
 # Check PV/PVC status
 kubectl get pv,pvc -A
 
-# Check Longhorn status (if used)
-kubectl get pods -n longhorn-system
+# Check local-path provisioner status
+kubectl get sc local-path
 
 # Describe problematic PVC
 kubectl describe pvc <pvc-name> -n <namespace>
 
-# Check node storage capacity
-df -h
+# Check node storage capacity and local-path storage
+df -h /var/lib/rancher/k3s/storage
 ```
 
-#### Problem: Longhorn installation fails
+#### Problem: Local-path provisioner issues
 **Solutions:**
 ```bash
-# Check prerequisites
-curl -sSfL https://raw.githubusercontent.com/longhorn/longhorn/v1.4.0/scripts/environment_check.sh | bash
+# Check local-path storage class
+kubectl describe sc local-path
 
-# Install missing dependencies
-sudo apt install -y open-iscsi nfs-common
+# Check if directory exists
+sudo ls -la /var/lib/rancher/k3s/storage
 
-# Restart Longhorn pods
-kubectl delete pods -n longhorn-system -l app=longhorn-manager
+# Fix permissions if needed
+sudo chmod 755 /var/lib/rancher/k3s/storage
 ```
 
 ### 4. Networking Issues
@@ -382,7 +382,7 @@ kubectl logs --all-containers=true --selector app=<app> -n <namespace> > app-log
 - [K3s Documentation](https://docs.k3s.io/)
 - [ArgoCD Documentation](https://argo-cd.readthedocs.io/)
 - [Kubernetes Troubleshooting](https://kubernetes.io/docs/tasks/debug-application-cluster/)
-- [Longhorn Documentation](https://longhorn.io/docs/)
+- [Local Path Provisioner](https://github.com/rancher/local-path-provisioner)
 
 ### Emergency Contacts
 - Check project README for maintainer contacts

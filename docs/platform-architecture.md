@@ -1,16 +1,16 @@
-# CloudVelocity Enterprise Deployment Platform - Architecture
+# CloudVelocity POC Deployment Platform - Architecture
 
 ## Overview
 
-CloudVelocity Enterprise is a proprietary, enterprise-grade deployment platform that provides a comprehensive one-stop-shop solution for application deployment, monitoring, and management. Built on top of Kubernetes and GitOps principles, it delivers enterprise features with a modern, professional interface.
+CloudVelocity POC is a proprietary, POC-grade deployment platform that provides a comprehensive one-stop-shop solution for application deployment, monitoring, and management. Built on top of Kubernetes and GitOps principles, it delivers POC features with a modern, professional interface.
 
 ## Architecture Diagram
 
 ```mermaid
 graph TB
-    subgraph "CloudVelocity Enterprise Platform"
+    subgraph "CloudVelocity POC Platform"
         subgraph "Frontend Layer"
-            UI[CloudVelocity Dashboard<br/>Professional Enterprise UI]
+            UI[CloudVelocity Dashboard<br/>Professional POC UI]
             API[Platform API<br/>RESTful Interface]
         end
         
@@ -42,7 +42,7 @@ graph TB
         
         subgraph "Kubernetes Infrastructure"
             K8s[Kubernetes Cluster<br/>K3s Single Node]
-            Storage[Longhorn<br/>Distributed Storage]
+            Storage[Local Path<br/>Provisioner]
             Network[Networking<br/>Ingress Controller]
         end
     end
@@ -87,13 +87,13 @@ graph TB
     Storage --> K8s
     Network --> K8s
     
-    classDef enterprise fill:#0052CC,stroke:#fff,stroke-width:2px,color:#fff
+    classDef poc fill:#0052CC,stroke:#fff,stroke-width:2px,color:#fff
     classDef monitoring fill:#36B37E,stroke:#fff,stroke-width:2px,color:#fff
     classDef security fill:#FF5630,stroke:#fff,stroke-width:2px,color:#fff
     classDef infrastructure fill:#6B73FF,stroke:#fff,stroke-width:2px,color:#fff
     classDef external fill:#97A0AF,stroke:#fff,stroke-width:2px,color:#fff
     
-    class UI,API,GitDeploy,TemplateDeploy,ContainerDeploy,CIDeploy enterprise
+    class UI,API,GitDeploy,TemplateDeploy,ContainerDeploy,CIDeploy poc
     class Prometheus,Grafana,Loki,Alert monitoring
     class RBAC,Scanner,Audit,Cert security
     class K8s,Storage,Network infrastructure
@@ -106,7 +106,7 @@ graph TB
 
 #### CloudVelocity Dashboard
 - **Technology**: Modern HTML5/CSS3/JavaScript
-- **Features**: Responsive design, real-time updates, enterprise branding
+- **Features**: Responsive design, real-time updates, POC branding
 - **Authentication**: Kubernetes RBAC integration
 - **Accessibility**: WCAG 2.1 compliant
 
@@ -124,7 +124,7 @@ graph TB
 - **Security**: SSH key management, signed commits validation
 
 #### Template-based Deployment
-- **Enterprise Templates**: React, Angular, .NET, Java Spring, Node.js
+- **POC Templates**: React, Angular, .NET, Java Spring, Node.js
 - **Customization**: Environment-specific configurations
 - **Validation**: Schema validation, dependency checking
 
@@ -154,14 +154,14 @@ graph TB
 - **Retention**: Configurable retention policies
 
 #### Visualization
-- **Grafana**: Pre-built enterprise dashboards
+- **Grafana**: Pre-built POC dashboards
 - **Alerting**: Threshold-based alerting
 - **Reporting**: Automated SLA reports
 
 #### Log Management
 - **Loki**: Centralized log aggregation
 - **Querying**: LogQL for advanced log analysis
-- **Retention**: Cost-optimized log retention
+- **Retention**: Optimized log retention
 
 ### 5. Security & Compliance
 
@@ -180,7 +180,7 @@ graph TB
 - **Change Management**: Approval workflows
 - **Compliance Reports**: Automated compliance reporting
 
-## Enterprise Features
+## POC Features
 
 ### High Availability
 - **Multi-zone Deployment**: Cross-AZ deployment support
@@ -192,12 +192,12 @@ graph TB
 - **Scaling**: Horizontal and vertical pod autoscaling
 - **Caching**: Intelligent caching strategies
 
-### Cost Management
-- **Resource Monitoring**: Real-time cost tracking
-- **Optimization**: Automated cost optimization recommendations
-- **Budgeting**: Cost allocation and budgeting tools
+### Resource Management
+- **Resource Monitoring**: Real-time resource tracking
+- **Optimization**: Automated performance optimization recommendations
+- **Allocation**: Resource allocation and management tools
 
-### Enterprise Integration
+### System Integration
 - **Service Mesh**: Istio integration for advanced networking
 - **Data Protection**: Velero backup integration
 - **Secrets Management**: HashiCorp Vault integration
@@ -221,12 +221,12 @@ graph TB
 │ ├── security namespace                                      │
 │ └── application namespaces                                  │
 ├─────────────────────────────────────────────────────────────┤
-│ Longhorn Distributed Storage                               │
+│ Local Path Provisioner                                     │
 │ Local Path Provisioner                                     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Enterprise Multi-Node Configuration
+### Multi-Node Configuration
 ```
 ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
 │   Master Node   │  │   Worker Node   │  │   Worker Node   │

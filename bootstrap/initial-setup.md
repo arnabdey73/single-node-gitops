@@ -106,28 +106,33 @@ watch 'kubectl get applications -n argocd'
 kubectl describe application monitoring -n argocd
 ```
 
-## Step 6: Configure Storage (Longhorn)
+## Step 6: Configure Storage (Local-path Provisioner)
 
-If using Longhorn for storage:
+The local-path provisioner is configured automatically with K3s:
 
 ```bash
-# Check Longhorn system pods
-kubectl get pods -n longhorn-system
+# Check the default storage class
+kubectl get sc
 
-# Access Longhorn UI (port forward)
-kubectl port-forward svc/longhorn-frontend -n longhorn-system 8000:80
+# Verify local-path StorageClass exists
+kubectl describe sc local-path
 
-# Create storage class (if not auto-created)
+# Check storage directory
+sudo ls -la /var/lib/rancher/k3s/storage
+
+# If needed, create a test PVC
 kubectl apply -f - <<EOF
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: longhorn
-provisioner: driver.longhorn.io
-allowVolumeExpansion: true
-parameters:
-  numberOfReplicas: "1"  # Single node deployment
-  staleReplicaTimeout: "2880"
+  name: test-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 100Mi
   fromBackup: ""
 EOF
 ```
@@ -224,7 +229,7 @@ kubectl top pods -A
 
 1. **Pods stuck in Pending**: Check node resources and storage
 2. **ArgoCD sync failures**: Check Git repository access and credentials
-3. **Storage issues**: Verify Longhorn installation and node storage
+3. **Storage issues**: Verify local-path provisioner and node storage
 
 ### Log Inspection
 
@@ -270,10 +275,10 @@ kubectl get svc -A
 
 After setup, you can access services at:
 
-- **ArgoCD**: https://localhost:8080 (port-forward)
-- **Grafana**: http://localhost:3000 (port-forward)  
-- **Prometheus**: http://localhost:9090 (port-forward)
-- **Longhorn**: http://localhost:8000 (port-forward)
-- **Gitea**: http://localhost:3001 (port-forward)
+- **ArgoCD**: `https://localhost:8080` (port-forward)
+- **Grafana**: `http://localhost:3000` (port-forward)  
+- **Prometheus**: `http://localhost:9090` (port-forward)
+- **Kubernetes Dashboard**: `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/` (kubectl proxy)
+- **Gitea**: `http://localhost:3001` (port-forward)
 
 Remember to save your ArgoCD admin password and update default credentials for all services!

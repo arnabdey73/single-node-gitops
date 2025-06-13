@@ -54,7 +54,7 @@ sudo ipmitool sensor list | head -10
 **Dell PowerEdge R540 Features Enabled:**
 - Hardware monitoring via Dell OpenManage Server Administrator
 - IPMI sensor monitoring for temperature, fans, and power
-- Optimized disk I/O scheduler for enterprise storage
+- Optimized disk I/O scheduler for high-performance storage
 - CPU governor set to performance mode
 - Enhanced network tuning for high-throughput workloads
 - Increased system limits for containerized workloads
@@ -155,7 +155,7 @@ kubectl get storageclass
 
 1. **Pods stuck in Pending**: Check node resources and storage
 2. **Network issues**: Verify firewall and DNS settings
-3. **Storage problems**: Check Longhorn installation
+3. **Storage problems**: Check local-path provisioner is working
 
 ### Getting Help
 
@@ -189,7 +189,7 @@ sudo sysctl --system
 
 Your PowerEdge R540 can handle increased resource allocations:
 
-- **Longhorn replicas**: 3 (instead of 1) for better redundancy
+- **Simple storage** with local-path provisioner
 - **Increased CPU/memory limits** for monitoring components
 - **Enhanced monitoring** with hardware sensors and IPMI
 - **Dell OpenManage integration** for hardware health monitoring
@@ -207,7 +207,7 @@ After installation, you can access:
 The Dell optimizations provide:
 
 - **CPU governor set to performance** for maximum throughput
-- **Optimized disk schedulers** for enterprise storage
+- **Optimized disk schedulers** for high-performance storage
 - **Enhanced network buffers** for high-throughput workloads
 - **Increased system limits** for container workloads
 

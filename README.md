@@ -1,111 +1,47 @@
 # Single Node GitOps DevOps Platform
 
-<div align="center">
+A complete GitOps-based DevOps platform designed for single-node deployments on Dell PowerEdge R540 hardware. This platform provides a solution for application deployment, monitoring, and management using K3s, ArgoCD, and other open source tools.
 
-# 🌟 **CloudVelocity Enterprise** 🌟
-### *The Ultimate Enterprise Deployment Platform*
-
-![Enterprise](https://img.shields.io/badge/CloudVelocity-Enterprise-blue?style=for-the-badge&logo=kubernetes)
-![ROI](https://img.shields.io/badge/ROI-2760%25-gold?style=for-the-badge)
-![Uptime](https://img.shields.io/badge/SLA-99.99%25-green?style=for-the-badge)
-![Deploy](https://img.shields.io/badge/Deploy_Time-30s-orange?style=for-the-badge)
-
-**🚀 One-Click Deployment • 📊 Real-time Analytics • 🔒 Enterprise Security • 💼 Business Value**
-
-</div>
+## � **Features**
+- **Git Repository Integration** with ArgoCD
+- **Kubernetes Dashboard** for cluster management  
+- **Container Registry Support** with security scanning
+- **CI/CD Pipeline Integration**
+- **99.99% Uptime** target with Dell hardware optimizations
+- **Real-time Analytics** with Prometheus and Grafana
+- **Hardware Monitoring** for Dell PowerEdge R540
+- **Security** with cert-manager and sealed-secrets
 
 ---
 
-## 🌟 Featuring CloudVelocity Enterprise Deployment Platform
+## 🚀 Quick Start - AppDeploy POC
 
-A complete GitOps-based DevOps platform designed for single-node deployments, **powered by CloudVelocity Enterprise** - a proprietary, enterprise-grade deployment platform that provides a one-stop-shop solution for application deployment, monitoring, and management.
+### ⚡ **Get AppDeploy Running in 5 Minutes**
 
----
+The fastest way to experience the power of AppDeploy POC:
 
-## ⭐ **CloudVelocity Enterprise** - The Star Feature
-
-**CloudVelocity Enterprise** is our flagship deployment platform that transforms how organizations deploy, monitor, and manage applications. Built on proven GitOps principles and Kubernetes, it provides:
-
-### 🚀 **One-Stop Deployment Solution**
-- **Git Repository Integration** - Deploy directly from GitHub, GitLab, Azure DevOps
-- **Enterprise Templates** - Pre-configured React, Angular, .NET, Java Spring templates  
-- **Container Registry Support** - Private registry integration with security scanning
-- **CI/CD Pipeline Integration** - Jenkins, Azure DevOps, GitHub Actions support
-
-### 📊 **Enterprise-Grade Features**
-- **99.99% Uptime SLA** - Enterprise reliability guarantee
-- **Real-time Analytics** - Performance metrics, cost optimization insights
-- **Security & Compliance** - SOC2, ISO27001, GDPR compliance tracking
-- **Professional Dashboard** - Modern, responsive enterprise interface
-
-### 💼 **Business Value**
-- **85% faster deployments** (hours → minutes)
-- **60% increase in developer productivity**
-- **40% reduction in operational costs**
-- **2,760% ROI with 2.6-month payback**
-
----
-
-## 💰 **CloudVelocity Business Value**
-
-### 📈 **ROI Metrics**
-- **2,760% ROI** with 2.6-month payback period
-- **85% faster deployments** (hours → minutes)  
-- **60% increase** in developer productivity
-- **40% reduction** in operational costs
-- **99.99% uptime SLA** guarantee
-
-### 🎯 **Perfect for Internal Sales**
-CloudVelocity Enterprise is designed to look and feel like a premium commercial product:
-
-- **Professional branding** with enterprise-grade UI/UX
-- **Comprehensive metrics** showcasing business value
-- **Security & compliance** features (SOC2, ISO27001, GDPR)
-- **Sales presentation materials** included in `docs/`
-- **Interactive demo script** for stakeholder presentations
-
-### 📋 **Enterprise Features**
-- **Multi-framework support**: React, Angular, .NET, Java Spring, Node.js
-- **Security scanning**: Automated vulnerability detection
-- **Cost analytics**: Resource optimization and budget tracking  
-- **Audit trails**: Comprehensive compliance reporting
-- **24/7 monitoring**: Real-time alerting and notifications
-
----
-
-## 🚀 Quick Start - CloudVelocity Enterprise
-
-### ⚡ **Get CloudVelocity Running in 5 Minutes**
-
-The fastest way to experience the power of CloudVelocity Enterprise:
-
-1. **Deploy the platform**:
+1. **Install the platform**:
    ```bash
    cd single-node-gitops
-   ./scripts/deployment-platform.sh start
+   chmod +x install.sh
+   ./install.sh
    ```
 
 2. **Open the dashboard**:
    ```bash
-   ./scripts/deployment-platform.sh open
+   ./scripts/dashboard-access.sh open
    ```
 
 3. **Start deploying applications** through the modern web interface!
 
-### 🎯 **Full Demo Experience**
+### 🎯 **Platform Features**
 
-Run the complete sales demonstration:
-
-```bash
-./scripts/cloudvelocity-demo.sh
-```
-
-This interactive demo showcases:
-- ✅ Enterprise deployment workflows
+The platform includes:
+- ✅ Kubernetes deployment workflows
 - ✅ Real-time monitoring and analytics  
-- ✅ GitOps integration capabilities
-- ✅ Professional dashboard interface
-- ✅ Business value proposition
+- ✅ GitOps integration with ArgoCD
+- ✅ Dashboard interfaces for management
+- ✅ Dell PowerEdge R540 optimizations
 
 ---
 
@@ -177,24 +113,20 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
 - Storage controller health monitoring
 - Performance-optimized resource limits
 
-## 🎯 **CloudVelocity Enterprise Dashboard** - Primary Interface
+## 🎯 **Dashboard Interfaces**
 
-**🌟 This is your main control center for all deployment operations!**
+### **Kubernetes Dashboard**
 
-### **CloudVelocity Enterprise** (Primary Deployment Platform)
-
-- **🚀 Quick Access**: `./scripts/deployment-platform.sh open`
-- **📱 URL**: `http://localhost:8080` (via port forwarding)
-- **🎯 Purpose**: **One-stop-shop for all deployment needs**
+- **🚀 Quick Access**: `./scripts/dashboard-access.sh`
+- **📱 URL**: `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/`
+- **🎯 Purpose**: Kubernetes cluster management and monitoring
 
 **⭐ Key Features**:
-- **One-click application deployment** from Git repositories
-- **Enterprise templates** for React, Angular, .NET, Java Spring
+- **Application deployment** and monitoring
+- **Resource management** for pods, deployments, services
 - **Real-time monitoring** and performance analytics  
-- **GitOps integration** with automated ArgoCD sync
-- **Professional interface** designed for enterprise presentations
-- **Cost optimization** and resource management tools
-- **Security compliance** tracking and audit trails
+- **Configuration management** for ConfigMaps and Secrets
+- **Node and pod metrics**
 
 **💼 Management Commands**:
 ```bash
@@ -210,8 +142,8 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
 # Show logs
 ./scripts/deployment-platform.sh logs
 
-# Run interactive demo
-./scripts/cloudvelocity-demo.sh
+# Run health checks
+./scripts/health-check.sh
 ```
 
 ---
@@ -228,12 +160,12 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
   - Custom application metrics
   - Pre-configured dashboards for K3s and Dell hardware
 
-### CloudVelocity Enterprise (Deployment Platform)
+### AppDeploy POC (Deployment Platform)
 
 - **URL**: `http://localhost:8080` (after running `./scripts/deployment-platform.sh open`)
 - **Features**:
   - One-stop-shop application deployment
-  - Enterprise-grade deployment workflows
+  - POC-grade deployment workflows
   - Real-time monitoring and analytics
   - GitOps integration with ArgoCD
   - Template-based deployments
@@ -261,14 +193,10 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
   - Pod logs and debugging
   - YAML resource editing
 
-### Longhorn Storage Dashboard
+### Storage
 
-- **URL**: `http://your-server-ip:30880`
-- **Features**:
-  - Volume management and monitoring
-  - Backup and restore operations
-  - Storage performance metrics
-  - Replica and snapshot management
+Storage on this platform uses Local Path Provisioner, which comes built-in with K3s.
+Persistent volumes are stored on the local node at `/var/lib/rancher/k3s/storage`.
 
 ### Dell OpenManage (Hardware Monitoring)
 
@@ -324,9 +252,8 @@ Use the dashboard access script for easy URL and credential retrieval:
 
 ## 📖 Documentation
 
-### **CloudVelocity Enterprise Documentation**
-- [CloudVelocity Architecture](docs/cloudvelocity-architecture.md) - Technical architecture and components
-- [Sales Presentation](docs/cloudvelocity-sales-presentation.md) - Business case and ROI analysis
+### **Architecture Documentation**
+- [Platform Architecture](docs/platform-architecture.md) - Technical architecture and components
 - [Platform README](applications/deployment-platform/README.md) - Detailed platform documentation
 
 ### **Platform Documentation**
@@ -336,9 +263,8 @@ Use the dashboard access script for easy URL and credential retrieval:
 
 ## 🔧 Management Scripts
 
-### **CloudVelocity Enterprise Scripts**
-- `scripts/deployment-platform.sh` - **Primary platform management**
-- `scripts/cloudvelocity-demo.sh` - **Interactive sales demonstration**
+### **Core Platform Scripts**
+- `scripts/deployment-platform.sh` - Platform management
 
 ### **Platform Management Scripts**
 - `scripts/health-check.sh` - System health verification
@@ -349,48 +275,29 @@ Use the dashboard access script for easy URL and credential retrieval:
 
 ---
 
-## 🌟 **CloudVelocity Enterprise - Complete Solution**
+## 🌟 **Technical Features**
 
-### **🎯 What Makes CloudVelocity Special**
+### **🔧 Core Technical Components**
 
-CloudVelocity Enterprise isn't just another deployment tool—it's a **complete enterprise-grade platform** designed to:
+This single-node GitOps platform includes:
 
-1. **🚀 Accelerate Development**: Deploy applications in seconds, not hours
-2. **💼 Impress Stakeholders**: Professional interface suitable for C-level presentations  
-3. **📊 Deliver Business Value**: Measurable ROI with comprehensive analytics
-4. **🔒 Ensure Compliance**: Built-in security scanning and audit trails
-5. **⚡ Simplify Operations**: One-stop-shop for all deployment needs
+1. **🚀 K3s**: Lightweight Kubernetes distribution
+2. **� ArgoCD**: GitOps continuous delivery tool
+3. **🔍 Monitoring**: Prometheus, Grafana, and Loki
+4. **💾 Storage**: Local Path Provisioner for persistent storage
+5. **🔒 Security**: Cert-manager and sealed-secrets
 
-### **🎨 Professional Design**
-- **Enterprise branding** with CloudVelocity identity
-- **Modern UI/UX** with responsive design
-- **Real-time updates** and live metrics
-- **Professional color scheme** and animations
-- **Sales-ready interface** for internal presentations
-
-### **🔧 Technical Excellence**
-- **GitOps native** with ArgoCD integration
-- **Kubernetes native** resource management
-- **Multi-cloud ready** deployment capabilities
-- **Security first** approach with automated scanning
-- **Monitoring integrated** with Prometheus and Grafana
-
-### **📈 Business Impact**
-- **Reduce time-to-market** by 50%
-- **Increase developer velocity** by 60%
-- **Lower operational costs** by 40%
-- **Improve deployment reliability** to 99.99%
-- **Accelerate digital transformation** initiatives
-
-**Ready to revolutionize your deployment process? Start with CloudVelocity Enterprise today!**
+### **� Platform Management**
 
 ```bash
-# Get started in 5 minutes
-./scripts/deployment-platform.sh start
-./scripts/deployment-platform.sh open
+# Bootstrap the platform
+./bootstrap/k3s-install.sh
 
-# Run the full demo
-./scripts/cloudvelocity-demo.sh
+# Access dashboards
+./scripts/dashboard-access.sh
+
+# Check system health
+./scripts/health-check.sh
 ```
 
 ---

@@ -157,30 +157,30 @@ backup_persistent_data() {
     log_success "Persistent data backup completed"
 }
 
-# Function to backup Longhorn volumes
-backup_longhorn_volumes() {
-    local backup_path=$1
+# Function to backup local-path volumes
+backup_local_path_volumes() {
+    local backup_path="$1"
     
-    log_info "Backing up Longhorn volumes..."
+    log_info "Backing up local-path volumes..."
     
-    if ! kubectl get namespace longhorn-system >/dev/null 2>&1; then
-        log_warning "Longhorn not found, skipping volume backups"
-        return
+    local storage_dir="/var/lib/rancher/k3s/storage"
+    if [ ! -d "$storage_dir" ]; then
+        log_warning "Local storage directory not found at $storage_dir, skipping volume backups"
+        return 0
     fi
     
-    local longhorn_dir="$backup_path/longhorn"
-    mkdir -p "$longhorn_dir"
+    local volumes_dir="$backup_path/local-storage"
+    mkdir -p "$volumes_dir"
     
-    # Export Longhorn volume information
-    kubectl get volumes.longhorn.io -n longhorn-system -o yaml > "$longhorn_dir/volumes.yaml" 2>/dev/null || log_warning "Failed to backup Longhorn volumes metadata"
-    kubectl get replicas.longhorn.io -n longhorn-system -o yaml > "$longhorn_dir/replicas.yaml" 2>/dev/null || log_warning "Failed to backup Longhorn replicas metadata"
-    kubectl get engines.longhorn.io -n longhorn-system -o yaml > "$longhorn_dir/engines.yaml" 2>/dev/null || log_warning "Failed to backup Longhorn engines metadata"
+    # Export PV and PVC information
+    kubectl get pv -o yaml > "$volumes_dir/persistent-volumes.yaml" 2>/dev/null || log_warning "Failed to backup PVs metadata"
+    kubectl get pvc --all-namespaces -o yaml > "$volumes_dir/persistent-volume-claims.yaml" 2>/dev/null || log_warning "Failed to backup PVCs metadata"
     
-    # Note: Actual volume data backup would require Longhorn's backup feature
-    # This would typically backup to S3 or NFS
-    log_info "Note: Longhorn volume data backup requires external storage (S3/NFS)"
+    # We could potentially backup the actual local-path storage data, but this is complex
+    # and would require sudo access and consideration for running containers
+    log_info "Note: Only metadata is backed up, consider backing up /var/lib/rancher/k3s/storage separately"
     
-    log_success "Longhorn metadata backup completed"
+    log_success "Local-path volumes metadata backup completed"
 }
 
 # Function to create backup manifest
@@ -201,7 +201,7 @@ Backup Contents:
 - etcd snapshot
 - Kubernetes resources (YAML)
 - Persistent volume data
-- Longhorn metadata
+- Local-path PV/PVC metadata
 - Configuration files
 
 Backup Size: $(du -sh "$backup_path" | cut -f1)
@@ -297,7 +297,7 @@ main() {
     backup_etcd "$backup_path"
     backup_k8s_resources "$backup_path"
     backup_persistent_data "$backup_path"
-    backup_longhorn_volumes "$backup_path"
+    backup_local_path_volumes "$backup_path"
     
     # Create manifest
     create_backup_manifest "$backup_path"

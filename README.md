@@ -259,6 +259,7 @@ Use the dashboard access script for easy URL and credential retrieval:
 ### **Platform Documentation**
 - [Installation Guide](docs/installation.md)
 - [Architecture Overview](docs/architecture.md)  
+- [Application Lifecycle Management](docs/application-lifecycle.md)
 - [Troubleshooting](docs/troubleshooting.md)
 
 ## 🔧 Management Scripts

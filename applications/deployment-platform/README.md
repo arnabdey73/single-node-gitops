@@ -223,3 +223,12 @@ POC License - Internal Use Only
 ---
 
 **CloudVelocity POC** - Accelerating Development, Simplifying Deployment
+
+### Application Lifecycle
+
+For detailed instructions on application onboarding and offloading, refer to the [Application Lifecycle Management](../../docs/application-lifecycle.md) guide, which covers:
+
+- Step-by-step application onboarding process
+- Application removal procedures
+- Best practices for application management
+- Troubleshooting common issues

@@ -82,6 +82,18 @@ After installation completes, you can:
    ./scripts/health-check.sh
    ```
 
+## Managing Your Applications
+
+To add or remove applications from the platform:
+
+1. Follow the detailed instructions in the [Application Lifecycle Management](application-lifecycle.md) guide.
+
+2. The guide covers:
+   - Step-by-step application onboarding process
+   - Application removal procedures
+   - Best practices for application management
+   - Troubleshooting common issues
+
 ## Manual Installation
 
 If you prefer to install components step-by-step manually, refer to the detailed [installation guide](installation.md).

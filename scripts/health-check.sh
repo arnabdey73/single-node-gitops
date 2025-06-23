@@ -342,6 +342,50 @@ check_hardware_optimizations() {
     fi
 }
 
+# Function to check security dashboard components
+check_security_dashboard() {
+    log_info "Checking security dashboard..."
+    
+    if kubectl get namespace security-dashboard >/dev/null 2>&1; then
+        check_pod_status "security-dashboard" "security-dashboard"
+        check_service_status "security-dashboard" "security-dashboard"
+        
+        # Check ConfigMap exists
+        if kubectl get configmap -n security-dashboard security-dashboard-config >/dev/null 2>&1; then
+            log_success "Security dashboard config exists"
+        else
+            log_warning "Security dashboard config not found"
+        fi
+        
+        # Check ingress
+        if kubectl get ingress -n security-dashboard security-dashboard-ingress >/dev/null 2>&1; then
+            local ingress_host=$(kubectl get ingress -n security-dashboard security-dashboard-ingress -o jsonpath='{.spec.rules[0].host}' 2>/dev/null)
+            if [ -n "$ingress_host" ]; then
+                log_success "Security dashboard ingress configured with host: $ingress_host"
+            else
+                log_warning "Security dashboard ingress has no host configured"
+            fi
+        else
+            log_warning "Security dashboard ingress not found"
+        fi
+    else
+        if kubectl get configmap -n monitoring security-dashboard-config >/dev/null 2>&1; then
+            log_success "Security dashboard integrated with monitoring"
+        else
+            log_warning "Security dashboard not found in dedicated or monitoring namespace"
+        fi
+    fi
+    
+    # Check Prometheus metrics/alerts for security
+    if kubectl get namespace monitoring >/dev/null 2>&1; then
+        if kubectl get configmap -n monitoring prometheus-security-rules >/dev/null 2>&1; then
+            log_success "Security alerts configured in Prometheus"
+        else
+            log_warning "Security alerts not configured in Prometheus"
+        fi
+    fi
+}
+
 # Main health check function
 main() {
     echo "========================================"
@@ -457,6 +501,31 @@ main() {
         log_error "No storage classes found"
     fi
     
+    # Docker Registry
+    log_info "Checking Docker registry..."
+    
+    if kubectl get namespace registry >/dev/null 2>&1; then
+        check_pod_status "registry" "docker-registry"
+        check_service_status "registry" "docker-registry"
+        
+        # Check if registry service is exposed via NodePort
+        local registry_nodeport=$(kubectl get svc docker-registry -n registry -o jsonpath='{.spec.ports[0].nodePort}' 2>/dev/null)
+        if [ -n "$registry_nodeport" ] && [ "$registry_nodeport" -eq 30500 ]; then
+            log_success "Docker registry exposed on NodePort 30500"
+        elif [ -n "$registry_nodeport" ]; then
+            log_success "Docker registry exposed on NodePort $registry_nodeport"
+        else
+            log_warning "Docker registry not exposed via NodePort"
+        fi
+        
+        # Check registry PVC if exists
+        if kubectl get pvc -n registry registry-docker-registry >/dev/null 2>&1; then
+            check_pvc_status "registry" "registry-docker-registry"
+        fi
+    else
+        log_warning "Docker registry namespace not found"
+    fi
+    
     # Security components
     log_info "Checking security components..."
     
@@ -475,8 +544,102 @@ main() {
         log_warning "sealed-secrets not found"
     fi
     
+    # Check Trivy Operator
+    if kubectl get namespace trivy-system >/dev/null 2>&1; then
+        check_pod_status "trivy-system" "trivy-operator"
+        log_info "Checking vulnerabilities reports..."
+        local vuln_reports=$(kubectl get vulnerabilityreports --all-namespaces 2>/dev/null | grep -v "NAME" | wc -l)
+        if [ "$vuln_reports" -gt 0 ]; then
+            log_success "Found $vuln_reports vulnerability reports"
+            
+            # Check for critical vulnerabilities
+            local critical_vulns=$(kubectl get vulnerabilityreports --all-namespaces -o json 2>/dev/null | 
+                jq -r '.items[] | select(.report.summary.criticalCount > 0) | .metadata.name' | wc -l)
+            
+            if [ "$critical_vulns" -gt 0 ]; then
+                log_warning "Found $critical_vulns reports with critical vulnerabilities"
+            else
+                log_success "No critical vulnerabilities detected"
+            fi
+        else
+            log_warning "No vulnerability reports found - Trivy may still be scanning"
+        fi
+    else
+        log_warning "trivy-system namespace not found"
+    fi
+    
+    # Check OPA Gatekeeper
+    if kubectl get namespace gatekeeper-system >/dev/null 2>&1; then
+        check_pod_status "gatekeeper-system" "gatekeeper-controller-manager"
+        check_pod_status "gatekeeper-system" "gatekeeper-audit"
+        
+        # Check for constraint templates and constraints
+        local constraint_templates=$(kubectl get constrainttemplates 2>/dev/null | grep -v NAME | wc -l)
+        if [ "$constraint_templates" -gt 0 ]; then
+            log_success "Found $constraint_templates constraint templates"
+        else
+            log_warning "No constraint templates found"
+        fi
+        
+        # Check for constraint violations
+        local constraints=$(kubectl get constraints --all-namespaces 2>/dev/null | grep -v NAME | wc -l || echo "0")
+        if [ "$constraints" -gt 0 ]; then
+            log_success "Found $constraints policy constraints"
+            
+            # Check if there are any violations
+            local violations=$(kubectl get constraints --all-namespaces -o json 2>/dev/null | 
+                jq -r '.items[] | select((.status.totalViolations // 0) > 0) | .metadata.name' | wc -l)
+            
+            if [ "$violations" -gt 0 ]; then
+                log_warning "Found $violations policy constraints with violations"
+            else
+                log_success "No policy violations detected"
+            fi
+        else
+            log_warning "No policy constraints found"
+        fi
+    else
+        log_warning "gatekeeper-system namespace not found"
+    fi
+    
+    # Check kube-bench CIS benchmarks
+    if kubectl get namespace security-tools >/dev/null 2>&1; then
+        local kb_job=$(kubectl get cronjob -n security-tools -l app.kubernetes.io/name=kube-bench -o name 2>/dev/null)
+        if [ -n "$kb_job" ]; then
+            log_success "kube-bench cronjob configured"
+            
+            # Check if there are any recent jobs
+            local kb_latest_job=$(kubectl get job -n security-tools -l app.kubernetes.io/name=kube-bench --sort-by=.metadata.creationTimestamp -o name 2>/dev/null | tail -1)
+            if [ -n "$kb_latest_job" ]; then
+                local kb_job_status=$(kubectl get $kb_latest_job -n security-tools -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' 2>/dev/null)
+                if [ "$kb_job_status" = "True" ]; then
+                    log_success "Latest kube-bench job completed successfully"
+                else
+                    log_warning "Latest kube-bench job did not complete successfully"
+                fi
+            else
+                log_warning "No kube-bench jobs found"
+            fi
+        else
+            log_warning "kube-bench cronjob not found"
+        fi
+    else
+        log_warning "security-tools namespace not found"
+    fi
+    
+    # Check network policies
+    local network_policies=$(kubectl get networkpolicy --all-namespaces 2>/dev/null | grep -v NAME | wc -l)
+    if [ "$network_policies" -gt 0 ]; then
+        log_success "Found $network_policies network policies"
+    else
+        log_warning "No network policies found - network security may be compromised"
+    fi
+    
     # Dell hardware monitoring
     check_dell_hardware
+    
+    # Check security dashboard
+    check_security_dashboard
     
     # Summary
     echo ""

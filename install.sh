@@ -19,9 +19,66 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YIGHLLOW='\033[1;33m'
+YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
+
+# Configuration options with defaults
+ENABLE_VULNERABILITY_SCANNING=true
+ENABLE_POLICY_ENFORCEMENT=true
+ENABLE_CIS_BENCHMARKS=true
+ENABLE_SECURITY_DASHBOARD=true
+
+# Parse command line arguments
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --disable-vulnerability-scanning)
+                ENABLE_VULNERABILITY_SCANNING=false
+                shift
+                ;;
+            --disable-policy-enforcement)
+                ENABLE_POLICY_ENFORCEMENT=false
+                shift
+                ;;
+            --disable-cis-benchmarks)
+                ENABLE_CIS_BENCHMARKS=false
+                shift
+                ;;
+            --disable-security-dashboard)
+                ENABLE_SECURITY_DASHBOARD=false
+                shift
+                ;;
+            --disable-all-security)
+                ENABLE_VULNERABILITY_SCANNING=false
+                ENABLE_POLICY_ENFORCEMENT=false
+                ENABLE_CIS_BENCHMARKS=false
+                ENABLE_SECURITY_DASHBOARD=false
+                shift
+                ;;
+            --help)
+                echo "Usage: $0 [options]"
+                echo ""
+                echo "Options:"
+                echo "  --disable-vulnerability-scanning  Disable Trivy vulnerability scanning"
+                echo "  --disable-policy-enforcement      Disable OPA Gatekeeper policy enforcement"
+                echo "  --disable-cis-benchmarks          Disable CIS Kubernetes benchmarks"
+                echo "  --disable-security-dashboard      Disable security dashboard"
+                echo "  --disable-all-security            Disable all security components"
+                echo "  --help                            Show this help message"
+                echo ""
+                echo "By default, all security components are enabled."
+                echo ""
+                exit 0
+                ;;
+            *)
+                echo "Unknown option: $1"
+                echo "Use --help for usage information."
+                exit 1
+                ;;
+        esac
+    done
+}
 
 # Logging functions
 log() {
@@ -745,6 +802,10 @@ deploy_applications() {
     # Setup Docker registry configuration
     log "Setting up Docker registry configuration..."
     chmod +x scripts/docker-registry.sh
+    
+    # Setup DevSecOps components
+    log "Setting up DevSecOps components..."
+    chmod +x scripts/container-security.sh
 
     # Setup additional monitoring and management components
     setup_certificate_monitoring
@@ -914,6 +975,28 @@ ${CYAN}MONITORING & MANAGEMENT:${NC}
    ${YELLOW}kubectl get pods -A${NC}
 
 2. Check system health:
+   ${YELLOW}./scripts/health-check.sh${NC}
+
+3. Generate Security Reports:
+   ${YELLOW}./scripts/container-security.sh${NC}
+
+${CYAN}DEVSECOPS FEATURES:${NC}
+
+1. Vulnerability Scanning (Trivy Operator):
+   ${YELLOW}kubectl get vulnerabilityreports --all-namespaces${NC}
+   
+2. Policy Enforcement (OPA Gatekeeper):
+   ${YELLOW}kubectl get constraints -A${NC}
+   
+3. CIS Benchmarking:
+   ${YELLOW}kubectl logs -n security-tools job/$(kubectl get job -n security-tools -l app.kubernetes.io/name=kube-bench -o=jsonpath='{.items[-1:].metadata.name}')${NC}
+   
+4. Security Dashboard:
+   Will be available at: https://<your-host>/security-dashboard/
+   
+5. Learn more about the DevSecOps features:
+   ${YELLOW}cat docs/devsecops-integration.md${NC}
+
    ${YELLOW}./scripts/health-check.sh${NC}
 
 3. Create system backup:
@@ -1121,6 +1204,35 @@ verify_installation() {
         all_checks_passed=false
     fi
     
+    # Check DevSecOps components
+    log "Checking DevSecOps components status..."
+    
+    # Check security namespaces
+    if kubectl get namespace trivy-system &>/dev/null; then
+        log "Trivy Operator namespace exists ✓"
+    else
+        log "Trivy Operator namespace not yet created (will be created by ArgoCD)"
+    fi
+    
+    if kubectl get namespace gatekeeper-system &>/dev/null; then
+        log "OPA Gatekeeper namespace exists ✓"
+    else
+        log "OPA Gatekeeper namespace not yet created (will be created by ArgoCD)"
+    fi
+    
+    if kubectl get namespace security-tools &>/dev/null; then
+        log "Security tools namespace exists ✓"
+    else
+        log "Security tools namespace not yet created (will be created by ArgoCD)"
+    fi
+    
+    # Check security applications
+    if kubectl get application security -n argocd &>/dev/null; then
+        log "Security application exists in ArgoCD ✓"
+    else
+        warn "Security application not yet created in ArgoCD"
+    fi
+    
     # Overall assessment
     if [ "$all_checks_passed" = true ]; then
         log "All verification checks passed ✓"
@@ -1130,8 +1242,156 @@ verify_installation() {
     fi
 }
 
+# Setup and verify DevSecOps components
+setup_devsecops() {
+    print_header "SETTING UP DEVSECOPS COMPONENTS"
+    
+    # Display configuration
+    log "DevSecOps configuration:"
+    log "- Vulnerability Scanning: $([ "$ENABLE_VULNERABILITY_SCANNING" = true ] && echo "Enabled" || echo "Disabled")"
+    log "- Policy Enforcement: $([ "$ENABLE_POLICY_ENFORCEMENT" = true ] && echo "Enabled" || echo "Disabled")"
+    log "- CIS Benchmarks: $([ "$ENABLE_CIS_BENCHMARKS" = true ] && echo "Enabled" || echo "Disabled")"
+    log "- Security Dashboard: $([ "$ENABLE_SECURITY_DASHBOARD" = true ] && echo "Enabled" || echo "Disabled")"
+    
+    # Configure security components based on flags
+    if [ "$ENABLE_VULNERABILITY_SCANNING" = true ] || [ "$ENABLE_POLICY_ENFORCEMENT" = true ] || [ "$ENABLE_CIS_BENCHMARKS" = true ] || [ "$ENABLE_SECURITY_DASHBOARD" = true ]; then
+        log "Setting up security components..."
+        
+        # Create shared security namespace
+        kubectl create namespace security-tools --dry-run=client -o yaml | kubectl apply -f -
+        kubectl label namespace security-tools security=tools --overwrite
+        
+        # Setup Trivy if enabled
+        if [ "$ENABLE_VULNERABILITY_SCANNING" = true ]; then
+            log "Setting up vulnerability scanning (Trivy)..."
+            kubectl create namespace trivy-system --dry-run=client -o yaml | kubectl apply -f -
+            kubectl label namespace trivy-system security=scan --overwrite
+        else
+            # Create a patch file to disable the Trivy component in the app-of-apps
+            mkdir -p patches
+            cat > patches/disable-trivy.yaml <<EOF
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: trivy-operator
+  namespace: argocd
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=false
+EOF
+            log "Created patch to disable Trivy vulnerability scanning"
+        fi
+        
+        # Setup OPA Gatekeeper if enabled
+        if [ "$ENABLE_POLICY_ENFORCEMENT" = true ]; then
+            log "Setting up policy enforcement (OPA Gatekeeper)..."
+            kubectl create namespace gatekeeper-system --dry-run=client -o yaml | kubectl apply -f -
+            kubectl label namespace gatekeeper-system security=policy --overwrite
+        else
+            # Create a patch file to disable the Gatekeeper component in the app-of-apps
+            mkdir -p patches
+            cat > patches/disable-gatekeeper.yaml <<EOF
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gatekeeper
+  namespace: argocd
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=false
+EOF
+            log "Created patch to disable OPA Gatekeeper policy enforcement"
+        fi
+        
+        # Setup CIS Benchmarks if enabled
+        if [ "$ENABLE_CIS_BENCHMARKS" = false ]; then
+            # Create a patch file to disable the kube-bench component in the app-of-apps
+            mkdir -p patches
+            cat > patches/disable-kube-bench.yaml <<EOF
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-bench
+  namespace: argocd
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=false
+EOF
+            log "Created patch to disable CIS benchmarking"
+        else
+            log "Setting up CIS benchmarking (kube-bench)..."
+        fi
+        
+        # Setup Security Dashboard if enabled
+        if [ "$ENABLE_SECURITY_DASHBOARD" = false ]; then
+            # Create a patch file to disable the security dashboard component in the app-of-apps
+            mkdir -p patches
+            cat > patches/disable-security-dashboard.yaml <<EOF
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: security-dashboard
+  namespace: argocd
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=false
+EOF
+            log "Created patch to disable security dashboard"
+        else
+            log "Setting up security dashboard..."
+        fi
+        
+        log "Verifying deployment of security components via ArgoCD..."
+        log "Note: Full security component deployment will be completed by ArgoCD"
+        log "Initial security setup completed"
+        
+        # Apply patches if any were created
+        if [ -d "patches" ] && [ "$(ls -A patches)" ]; then
+            log "Applying patches to disable selected security components..."
+            for patch in patches/*.yaml; do
+                if [ -f "$patch" ]; then
+                    kubectl apply -f "$patch"
+                fi
+            done
+        fi
+        
+        # Show security information
+        info "Security reports can be generated using: ./scripts/container-security.sh"
+        
+        # Run initial security assessment if enabled
+        if [ -f "scripts/container-security.sh" ] && [ "$ENABLE_VULNERABILITY_SCANNING" = true ]; then
+            log "Running initial security assessment (this may take a few minutes)..."
+            # Run in background to not block installation, but capture output
+            ./scripts/container-security.sh > security-initial-assessment.txt &
+            log "Initial security assessment started in background"
+            log "Results will be available in: security-initial-assessment.txt"
+        fi
+    else
+        log "All security components are disabled. Skipping security setup."
+    fi
+}
+
 # Main installation flow
 main() {
+    # Parse command line arguments
+    parse_args "$@"
+    
     print_header "STARTING INSTALLATION OF APPDEPLOY PLATFORM"
     
     # Record start time for total installation duration
@@ -1151,6 +1411,7 @@ main() {
         deploy_base_infrastructure
         deploy_argocd
         deploy_applications
+        setup_devsecops
         setup_access
         test_backup_restore
         create_upgrade_script
@@ -1182,4 +1443,4 @@ handle_error() {
 trap 'handle_error $LINENO' ERR
 
 # Start installation
-main
+main "$@"

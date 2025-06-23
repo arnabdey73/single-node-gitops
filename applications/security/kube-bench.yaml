@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-bench
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kube-bench
+    app.kubernetes.io/part-of: security-benchmarks
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/arnabdey73/single-node-gitops.git
+    targetRevision: HEAD
+    path: applications/security/kube-bench
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: security-tools
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

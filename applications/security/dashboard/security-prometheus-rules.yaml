@@ -1,0 +1,36 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: security-prometheus-rules
+  namespace: security-monitoring
+  labels:
+    prometheus: k8s
+    role: alert-rules
+spec:
+  groups:
+  - name: security.rules
+    rules:
+    - alert: CriticalVulnerabilityFound
+      expr: sum(trivy_vulnerabilities{severity="CRITICAL"}) > 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: Critical vulnerability detected
+        description: A critical vulnerability was detected in one of the container images.
+    - alert: HighVulnerabilityCount
+      expr: sum(trivy_vulnerabilities{severity="HIGH"}) > 10
+      for: 5m
+      labels:
+        severity: high
+      annotations:
+        summary: High number of vulnerabilities detected
+        description: More than 10 high vulnerabilities were detected across container images.
+    - alert: PolicyViolationsDetected
+      expr: sum(gatekeeper_constraint_violations_total) > 0
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: Policy violations detected
+        description: Security policy violations have been detected by OPA Gatekeeper.

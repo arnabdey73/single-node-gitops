@@ -1,0 +1,15 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPodSecurityStandards
+metadata:
+  name: enforce-baseline-pod-security
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    excludedNamespaces:
+      - kube-system
+      - security-tools
+  parameters:
+    level: "baseline"
+    version: "latest"

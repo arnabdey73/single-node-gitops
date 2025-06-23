@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kube-bench
+  namespace: security-tools
+spec:
+  schedule: "0 2 * * *"  # Run daily at 2 AM
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          hostPID: true
+          containers:
+          - name: kube-bench
+            image: aquasec/kube-bench:latest
+            command:
+            - kube-bench
+            - --benchmark
+            - k3s-1.23
+            securityContext:
+              privileged: true
+            volumeMounts:
+            - name: var-lib-kubelet
+              mountPath: /var/lib/kubelet
+              readOnly: true
+            - name: etc-systemd
+              mountPath: /etc/systemd
+              readOnly: true
+            - name: etc-kubernetes
+              mountPath: /etc/kubernetes
+              readOnly: true
+            - name: usr-bin
+              mountPath: /usr/bin
+              readOnly: true
+          restartPolicy: OnFailure
+          volumes:
+          - name: var-lib-kubelet
+            hostPath:
+              path: /var/lib/kubelet
+          - name: etc-systemd
+            hostPath:
+              path: /etc/systemd
+          - name: etc-kubernetes
+            hostPath:
+              path: /etc/kubernetes
+          - name: usr-bin
+            hostPath:
+              path: /usr/bin

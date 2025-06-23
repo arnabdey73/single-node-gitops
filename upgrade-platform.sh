@@ -208,6 +208,60 @@ upgrade_applications() {
     fi
 }
 
+# Upgrading security components
+upgrade_security_components() {
+    header "Upgrading Security Components"
+    
+    log "Checking security components..."
+    
+    # Upgrade Trivy Operator
+    log "Upgrading vulnerability scanning components..."
+    if kubectl get namespace trivy-system &>/dev/null; then
+        kubectl apply -f applications/security/scanning/trivy-operator.yaml
+        success "Trivy Operator upgraded"
+    else
+        warn "Trivy Operator not installed, skipping"
+    fi
+    
+    # Upgrade OPA Gatekeeper
+    log "Upgrading policy enforcement components..."
+    if kubectl get namespace gatekeeper-system &>/dev/null; then
+        kubectl apply -f applications/security/gatekeeper.yaml
+        success "OPA Gatekeeper upgraded"
+    else
+        warn "OPA Gatekeeper not installed, skipping"
+    fi
+    
+    # Refresh security policies
+    log "Refreshing security policies..."
+    if kubectl get constraints &>/dev/null; then
+        kubectl apply -f applications/security/policies.yaml
+        success "Security policies refreshed"
+    else
+        warn "No security policies found, skipping"
+    fi
+    
+    # Update CIS benchmarks
+    log "Updating CIS benchmark components..."
+    if kubectl get namespace security-tools &>/dev/null; then
+        kubectl apply -f applications/security/kube-bench.yaml
+        success "CIS benchmark components updated"
+    else
+        warn "Security tools namespace not found, skipping CIS benchmark update"
+    fi
+    
+    # Update security dashboard
+    log "Updating security dashboard..."
+    if kubectl get namespace security-monitoring &>/dev/null; then
+        kubectl apply -f applications/security/security-dashboard.yaml
+        success "Security dashboard updated"
+    else
+        warn "Security monitoring namespace not found, skipping dashboard update"
+    fi
+    
+    log "Security components upgrade complete"
+}
+
 # Platform health check
 verify_health() {
     header "Verifying Platform Health"
@@ -242,6 +296,7 @@ main() {
     upgrade_k3s
     upgrade_argocd
     upgrade_applications
+    upgrade_security_components
     verify_health
     
     header "Upgrade Complete"

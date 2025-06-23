@@ -12,6 +12,7 @@ A complete GitOps-based DevOps platform designed for single-node deployments on 
 - **Hardware Monitoring** for Dell PowerEdge R540
 - **Security** with cert-manager and sealed-secrets
 - **Enhanced Resilience** with corner case mitigations
+- **DevSecOps Integration** with vulnerability scanning and policy enforcement
 
 ---
 
@@ -184,6 +185,25 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
   - GitOps workflow management
   - Application health and sync status
 
+### DevSecOps Dashboard
+
+- **URL**: `http://your-server-ip:30085` (after running port-forward)
+- **Features**:
+  - Vulnerability scanning reports
+  - Policy compliance monitoring
+  - CIS benchmark results
+  - Security posture visualization
+  - Automated security alerts
+- **Management**:
+
+  ```bash
+  # Generate security report
+  ./scripts/container-security.sh
+  
+  # View security dashboard
+  kubectl port-forward svc/security-dashboard -n security-monitoring 8085:80
+  ```
+
 ### Docker Registry
 
 - **URL**: `http://your-server-ip:30500`
@@ -290,6 +310,7 @@ Use the dashboard access script for easy URL and credential retrieval:
 - [Installation Guide](docs/installation.md)
 - [Architecture Overview](docs/architecture.md)  
 - [Application Lifecycle Management](docs/application-lifecycle.md)
+- [DevSecOps Integration](docs/devsecops-integration.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Resource Management](docs/resource-management.md)
 - [Corner Case Mitigations](docs/corner-case-mitigations.md)
@@ -300,6 +321,7 @@ Use the dashboard access script for easy URL and credential retrieval:
 
 - `scripts/deployment-platform.sh` - Platform management
 - `scripts/docker-registry.sh` - Docker registry management
+- `scripts/container-security.sh` - Security scanning and reporting
 
 ### **Platform Management Scripts**
 

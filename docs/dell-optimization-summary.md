@@ -41,7 +41,7 @@
 | Prometheus Memory | 2GB limit | 8GB limit | 4x increase |
 | Grafana Memory | 1GB limit | 2GB limit | 2x increase |
 | Storage Retention | 15 days | 15 days | Same |
-| Storage Solution | Longhorn | local-path | Simplified storage |
+| Storage Solution | Default | local-path | Simplified storage |
 | Network Buffers | Default | 64MB | ~16x increase |
 | Open File Limit | 1024 | 65536 | 64x increase |
 | Max Pods | 110 | 250 | 2.3x increase |

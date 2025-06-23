@@ -2,7 +2,7 @@
 
 A complete GitOps-based DevOps platform designed for single-node deployments on Dell PowerEdge R540 hardware. This platform provides a solution for application deployment, monitoring, and management using K3s, ArgoCD, and other open source tools.
 
-## � **Features**
+## 🌟 **Features**
 - **Git Repository Integration** with ArgoCD
 - **Kubernetes Dashboard** for cluster management  
 - **Container Registry Support** with security scanning
@@ -11,6 +11,7 @@ A complete GitOps-based DevOps platform designed for single-node deployments on 
 - **Real-time Analytics** with Prometheus and Grafana
 - **Hardware Monitoring** for Dell PowerEdge R540
 - **Security** with cert-manager and sealed-secrets
+- **Enhanced Resilience** with corner case mitigations
 
 ---
 
@@ -257,10 +258,13 @@ Use the dashboard access script for easy URL and credential retrieval:
 - [Platform README](applications/deployment-platform/README.md) - Detailed platform documentation
 
 ### **Platform Documentation**
+
 - [Installation Guide](docs/installation.md)
 - [Architecture Overview](docs/architecture.md)  
 - [Application Lifecycle Management](docs/application-lifecycle.md)
 - [Troubleshooting](docs/troubleshooting.md)
+- [Resource Management](docs/resource-management.md)
+- [Corner Case Mitigations](docs/corner-case-mitigations.md)
 
 ## 🔧 Management Scripts
 
@@ -268,7 +272,10 @@ Use the dashboard access script for easy URL and credential retrieval:
 - `scripts/deployment-platform.sh` - Platform management
 
 ### **Platform Management Scripts**
+
 - `scripts/health-check.sh` - System health verification
+- `scripts/node-recovery.sh` - Recover from node failures/reboots
+- `scripts/check-corner-case-mitigations.sh` - Verify corner case mitigations
 - `scripts/backup.sh` - Backup cluster state
 - `scripts/restore.sh` - Restore from backup
 - `scripts/dashboard-access.sh` - Get all dashboard URLs and credentials

@@ -1,4 +1,4 @@
-# CloudVelocity POC Deployment Platform
+# AppDeploy POC Deployment Platform
 
 A proprietary, POC-grade deployment platform that provides a one-stop-shop solution for application deployment, monitoring, and management. Built on top of your existing GitOps infrastructure with ArgoCD and Kubernetes.
 
@@ -133,7 +133,7 @@ The dashboard provides comprehensive monitoring:
 The platform is designed to look proprietary and POC-grade for technical demonstrations:
 
 ### Branding Elements
-- **CloudVelocity POC** brand name
+- **AppDeploy POC** brand name
 - **Professional color scheme** with corporate blue palette
 - **POC badges** and version information
 - **SLA guarantees** prominently displayed
@@ -147,7 +147,7 @@ The platform is designed to look proprietary and POC-grade for technical demonst
 - POC-grade UI/UX design
 
 ### Customization Options
-1. **Update branding** in `cloudvelocity-dashboard.html`
+1. **Update branding** in `appdeploy-dashboard.html`
 2. **Modify metrics** to reflect your environment
 3. **Add customer-specific features** in the deployment wizard
 4. **Customize domains** in ingress configuration
@@ -222,7 +222,7 @@ POC License - Internal Use Only
 
 ---
 
-**CloudVelocity POC** - Accelerating Development, Simplifying Deployment
+**AppDeploy POC** - Accelerating Development, Simplifying Deployment
 
 ### Application Lifecycle
 

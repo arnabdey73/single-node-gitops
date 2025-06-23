@@ -1,16 +1,16 @@
-# CloudVelocity POC Deployment Platform - Architecture
+# AppDeploy POC Deployment Platform - Architecture
 
 ## Overview
 
-CloudVelocity POC is a proprietary, POC-grade deployment platform that provides a comprehensive one-stop-shop solution for application deployment, monitoring, and management. Built on top of Kubernetes and GitOps principles, it delivers POC features with a modern, professional interface.
+AppDeploy POC is a proprietary, POC-grade deployment platform that provides a comprehensive one-stop-shop solution for application deployment, monitoring, and management. Built on top of Kubernetes and GitOps principles, it delivers POC features with a modern, professional interface.
 
 ## Architecture Diagram
 
 ```mermaid
 graph TB
-    subgraph "CloudVelocity POC Platform"
+    subgraph "AppDeploy POC Platform"
         subgraph "Frontend Layer"
-            UI[CloudVelocity Dashboard<br/>Professional POC UI]
+            UI[AppDeploy Dashboard<br/>Professional POC UI]
             API[Platform API<br/>RESTful Interface]
         end
         
@@ -104,7 +104,7 @@ graph TB
 
 ### 1. Frontend Layer
 
-#### CloudVelocity Dashboard
+#### AppDeploy Dashboard
 - **Technology**: Modern HTML5/CSS3/JavaScript
 - **Features**: Responsive design, real-time updates, POC branding
 - **Authentication**: Kubernetes RBAC integration
@@ -207,9 +207,9 @@ graph TB
 ### Single-Node Configuration
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    CloudVelocity Node                       │
+│                    AppDeploy Node                           │
 ├─────────────────────────────────────────────────────────────┤
-│ CloudVelocity Dashboard (Port 8080)                        │
+│ AppDeploy Dashboard (Port 8080)                            │
 │ ArgoCD (Port 30080)                                         │
 │ Grafana (Port 30300)                                        │
 │ Prometheus (Port 30090)                                     │
@@ -231,7 +231,7 @@ graph TB
 ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
 │   Master Node   │  │   Worker Node   │  │   Worker Node   │
 │                 │  │                 │  │                 │
-│ Control Plane   │  │ CloudVelocity   │  │ Applications    │
+│ Control Plane   │  │ AppDeploy       │  │ Applications    │
 │ ArgoCD          │  │ Dashboard       │  │ Workloads       │
 │ Monitoring      │  │ Ingress         │  │ Storage         │
 └─────────────────┘  └─────────────────┘  └─────────────────┘

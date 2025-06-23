@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudVelocity Deployment Platform Management Script
+# AppDeploy Deployment Platform Management Script
 # Usage: ./deployment-platform.sh [start|stop|status|logs|open]
 
 set -e
@@ -60,13 +60,12 @@ check_status() {
         return 0
     else
         warning "Deployment platform is not ready ($ready_replicas/$desired_replicas replicas ready)"
-        return 1
-    fi
+        return 1    fi
 }
 
 # Start the deployment platform
 start_platform() {
-    log "Starting CloudVelocity Deployment Platform..."
+    log "Starting AppDeploy Deployment Platform..."
     
     # Apply the ArgoCD application if it doesn't exist
     if ! kubectl get application "$APP_NAME" -n argocd &> /dev/null; then
@@ -154,8 +153,7 @@ open_platform() {
     else
         warning "Could not automatically open browser. Please visit: $url"
     fi
-    
-    echo ""
+      echo ""
     success "Port forwarding active on $url"
     log "Press Ctrl+C to stop port forwarding"
     
@@ -166,7 +164,7 @@ open_platform() {
 # Show access information
 show_access_info() {
     echo ""
-    echo -e "${BLUE}=== CloudVelocity Deployment Platform Access Info ===${NC}"
+    echo -e "${BLUE}=== AppDeploy Deployment Platform Access Info ===${NC}"
     echo ""
     echo "🌐 Web Interface:"
     echo "   Local Access: kubectl port-forward -n $NAMESPACE service/$APP_NAME 8080:80"
@@ -210,8 +208,7 @@ main() {
         open)
             open_platform
             ;;
-        *)
-            echo "CloudVelocity Deployment Platform Management"
+        *)            echo "AppDeploy Deployment Platform Management"
             echo ""
             echo "Usage: $0 [command]"
             echo ""

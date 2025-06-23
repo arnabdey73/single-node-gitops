@@ -64,11 +64,10 @@ data:
     server {
         listen 80;
         server_name _;
-        
-        location / {
+          location / {
             root /usr/share/nginx/html;
-            index cloudvelocity-dashboard.html;
-            try_files $uri $uri/ /cloudvelocity-dashboard.html;
+            index appdeploy-dashboard.html;
+            try_files $uri $uri/ /appdeploy-dashboard.html;
         }
         
         location /health {

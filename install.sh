@@ -19,7 +19,7 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
+YIGHLLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
@@ -741,7 +741,11 @@ deploy_applications() {
     
     log "Applications deployment initiated ✓"
     log "ArgoCD will now handle the progressive deployment of all components"
-    
+
+    # Setup Docker registry configuration
+    log "Setting up Docker registry configuration..."
+    chmod +x scripts/docker-registry.sh
+
     # Setup additional monitoring and management components
     setup_certificate_monitoring
     setup_log_rotation
@@ -898,6 +902,10 @@ ${CYAN}ACCESSING THE PLATFORM:${NC}
    ${YELLOW}kubectl port-forward svc/grafana -n monitoring 3000:3000${NC}
    Then open: http://localhost:3000
    Default credentials: admin/admin
+
+4. Access Docker Registry:
+   ${YELLOW}./scripts/docker-registry.sh info${NC}
+   Create user: ${YELLOW}./scripts/docker-registry.sh create-user username password${NC}
 
 ${CYAN}MONITORING & MANAGEMENT:${NC}
 

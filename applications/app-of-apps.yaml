@@ -11,9 +11,8 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
-  source:
-    repoURL: https://github.com/your-org/single-node-gitops.git
+  project: default  source:
+    repoURL: https://github.com/arnabdey73/single-node-gitops.git
     targetRevision: HEAD
     path: applications
     directory:

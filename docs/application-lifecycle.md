@@ -42,9 +42,8 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
-  source:
-    repoURL: https://github.com/your-org/repository.git
+  project: default  source:
+    repoURL: https://github.com/your-org/your-repo.git
     targetRevision: HEAD
     path: path/to/your/manifests
     # Or use Helm:

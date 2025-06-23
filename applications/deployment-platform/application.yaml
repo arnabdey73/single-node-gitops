@@ -7,9 +7,8 @@ metadata:
     app.kubernetes.io/name: deployment-platform
     app.kubernetes.io/component: dashboard
 spec:
-  project: default
-  source:
-    repoURL: https://github.com/your-org/single-node-gitops
+  project: default  source:
+    repoURL: https://github.com/arnabdey73/single-node-gitops
     targetRevision: HEAD
     path: applications/deployment-platform
   destination:

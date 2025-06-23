@@ -53,12 +53,12 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 ```bash
 # Add your Git repository
-argocd repo add https://github.com/your-org/your-repo.git \
+argocd repo add https://github.com/arnabdey73/your-repo.git \
   --username your-username \
   --password your-token
 
 # For SSH access
-argocd repo add git@github.com:your-org/your-repo.git \
+argocd repo add git@github.com:arnabdey73/your-repo.git \
   --ssh-private-key-path ~/.ssh/id_rsa
 ```
 
@@ -68,7 +68,7 @@ argocd repo add git@github.com:your-org/your-repo.git \
 # Create a project for your applications
 argocd proj create single-node-gitops \
   --description "Single Node GitOps Platform" \
-  --src https://github.com/your-org/single-node-gitops.git \
+  --src https://github.com/arnabdey73/single-node-gitops.git \
   --dest https://kubernetes.default.svc,argocd \
   --allow-cluster-resource '*/*' \
   --allow-namespaced-resource '*/*'

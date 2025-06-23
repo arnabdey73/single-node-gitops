@@ -184,6 +184,33 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
   - GitOps workflow management
   - Application health and sync status
 
+### Docker Registry
+
+- **URL**: `http://your-server-ip:30500`
+- **Access**: Configure using `./scripts/docker-registry.sh create-user <username> <password>`
+- **Features**:
+  - Private container registry for local image storage
+  - Authentication support
+  - Persistent storage for images
+  - NodePort access for external tools
+- **Usage**:
+
+```bash
+# Get registry information
+./scripts/docker-registry.sh info
+
+# Create a user
+./scripts/docker-registry.sh create-user myuser mypassword
+
+# Configure Docker to use insecure registry
+./scripts/docker-registry.sh configure-insecure
+
+# Use the registry
+docker login your-server-ip:30500
+docker tag myimage:latest your-server-ip:30500/myimage:latest
+docker push your-server-ip:30500/myimage:latest
+```
+
 ### Kubernetes Dashboard (Cluster Management)
 
 - **URL**: `http://your-server-ip:30443`
@@ -254,6 +281,7 @@ Use the dashboard access script for easy URL and credential retrieval:
 ## 📖 Documentation
 
 ### **Architecture Documentation**
+
 - [Platform Architecture](docs/platform-architecture.md) - Technical architecture and components
 - [Platform README](applications/deployment-platform/README.md) - Detailed platform documentation
 
@@ -269,7 +297,9 @@ Use the dashboard access script for easy URL and credential retrieval:
 ## 🔧 Management Scripts
 
 ### **Core Platform Scripts**
+
 - `scripts/deployment-platform.sh` - Platform management
+- `scripts/docker-registry.sh` - Docker registry management
 
 ### **Platform Management Scripts**
 

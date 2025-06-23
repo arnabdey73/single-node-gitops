@@ -95,7 +95,7 @@ git add .
 git commit -m "Initial Dell PowerEdge R540 optimized GitOps platform"
 
 # Push to your GitHub repository
-git remote add origin https://github.com/your-org/single-node-gitops.git
+git remote add origin https://github.com/arnabdey73/single-node-gitops.git
 git push -u origin main
 ```
 

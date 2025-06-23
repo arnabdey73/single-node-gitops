@@ -311,6 +311,7 @@ Use the dashboard access script for easy URL and credential retrieval:
 - [Architecture Overview](docs/architecture.md)  
 - [Application Lifecycle Management](docs/application-lifecycle.md)
 - [DevSecOps Integration](docs/devsecops-integration.md)
+- [Resource Consumption](docs/resource-consumption.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Resource Management](docs/resource-management.md)
 - [Corner Case Mitigations](docs/corner-case-mitigations.md)

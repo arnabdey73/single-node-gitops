@@ -121,7 +121,7 @@ main() {
     # ArgoCD Dashboard
     header "🔄 ArgoCD (GitOps Management)"
     if check_service "argocd" "argocd-server"; then
-        local argocd_url=$(get_service_url "argocd" "argocd-server" "8080")
+        local argocd_url=$(get_service_url "argocd" "argocd-server" "8081")
         local argocd_password=$(get_argocd_password)
         success "Status: Running"
         info "URL: $argocd_url"
@@ -204,7 +204,7 @@ main() {
     echo
     echo "# Port forward services (if needed)"
     echo "kubectl port-forward -n monitoring svc/grafana 3000:3000"
-    echo "kubectl port-forward -n argocd svc/argocd-server 8080:80"
+    echo "kubectl port-forward -n argocd svc/argocd-server 8081:8081"
     echo
     
     # System Status Summary

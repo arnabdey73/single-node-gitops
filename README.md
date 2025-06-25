@@ -191,7 +191,7 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
 
 ### ArgoCD (GitOps Management)
 
-- **URL**: `http://your-server-ip:30080`
+- **URL**: `http://your-server-ip:30081`
 - **Login**: admin / `kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d`
 - **Features**:
   - Application deployment status
@@ -272,11 +272,17 @@ Persistent volumes are stored on the local node at `/var/lib/rancher/k3s/storage
 
 ## 📊 Quick Dashboard Access
 
-Use the dashboard access script for easy URL and credential retrieval:
+Use the dashboard access scripts for easy URL and credential retrieval:
 
 ```bash
 # Get all dashboard URLs and credentials
 ./scripts/dashboard-access.sh
+
+# Access the AppDeploy dashboard specifically (runs on port 8082)
+./scripts/access-appdeploy.sh local
+
+# Get SSH tunnel instructions for the AppDeploy dashboard
+./scripts/access-appdeploy.sh tunnel
 
 # Check overall system health
 ./scripts/health-check.sh

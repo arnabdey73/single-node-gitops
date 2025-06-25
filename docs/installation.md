@@ -113,10 +113,15 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 ### Step 7: Access ArgoCD UI
 
 ```bash
-# Port forward to access ArgoCD UI
-kubectl port-forward svc/argocd-server -n argocd 8080:443
+# Access the AppDeploy Dashboard
+./scripts/access-appdeploy.sh local
 
-# Access at: https://localhost:8080
+# Access at: http://localhost:8082
+
+# Port forward to access ArgoCD UI
+kubectl port-forward svc/argocd-server -n argocd 8081:8081
+
+# Access at: https://localhost:8081
 # Username: admin
 # Password: (from previous step)
 ```
@@ -148,7 +153,7 @@ kubectl get storageclass
 
 ### Access Services
 
-- **ArgoCD**: `https://localhost:8080` (port-forward required)
+- **ArgoCD**: `https://localhost:8081` (port-forward required)
 - **Grafana**: `http://localhost:3000` (port-forward to grafana service)
 - **Prometheus**: `http://localhost:9090` (port-forward to prometheus service)
 
@@ -242,6 +247,8 @@ sudo ipmitool sensor list | grep -E "(Temp|Fan|Power)"
 
 ### Step 7: Access Services
 
-- **ArgoCD**: `https://localhost:8080` (port-forward required)
+- **AppDeploy Dashboard**: `http://localhost:8082` (use `./scripts/access-appdeploy.sh local`)
+- **ArgoCD**: `https://localhost:8081` (port-forward required)
 - **Grafana**: `http://localhost:3000` (port-forward to grafana service)
 - **Prometheus**: `http://localhost:9090` (port-forward to prometheus service)
+- **Jenkins**: `http://your-server-ip:8080` (running on the server directly)

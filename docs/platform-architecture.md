@@ -227,8 +227,9 @@ graph TB
 ┌─────────────────────────────────────────────────────────────┐
 │                    AppDeploy Node                           │
 ├─────────────────────────────────────────────────────────────┤
-│ AppDeploy Dashboard (Port 8080)                            │
-│ ArgoCD (Port 30080)                                         │
+│ AppDeploy Dashboard (Port 8082 - via port-forward)          │
+│ ArgoCD (Port 8081/30081)                                    │
+│ Jenkins (Port 8080)                                         │
 │ Grafana (Port 30300)                                        │
 │ Prometheus (Port 30090)                                     │
 ├─────────────────────────────────────────────────────────────┤

@@ -930,7 +930,7 @@ If NodePort services are blocked by firewalls, you can use SSH tunneling:
    ssh -L 8001:localhost:30443 user@your-server-ip
    
    # For ArgoCD Dashboard
-   ssh -L 8080:localhost:30080 user@your-server-ip
+   ssh -L 8081:localhost:30081 user@your-server-ip
    
    # For Grafana Dashboard
    ssh -L 3000:localhost:30300 user@your-server-ip
@@ -944,7 +944,7 @@ If NodePort services are blocked by firewalls, you can use SSH tunneling:
 ## Direct NodePort Access (if firewall allows)
 
 - Kubernetes Dashboard: https://your-server-ip:30443
-- ArgoCD Dashboard: https://your-server-ip:30080
+- ArgoCD Dashboard: https://your-server-ip:30081
 - Grafana Dashboard: http://your-server-ip:30300
 
 ## Port-Forward Access (most reliable)
@@ -1003,8 +1003,8 @@ ${CYAN}ACCESSING THE PLATFORM:${NC}
    ${YELLOW}./scripts/dashboard-access.sh open${NC}
 
 2. Access the ArgoCD UI:
-   ${YELLOW}kubectl port-forward svc/argocd-server -n argocd 8080:443${NC}
-   Then open: https://localhost:8080
+   ${YELLOW}kubectl port-forward svc/argocd-server -n argocd 8081:8081${NC}
+   Then open: https://localhost:8081
    Username: admin
    Password: ${ARGOCD_PASSWORD}
 

@@ -498,11 +498,11 @@ metadata:
 spec:
   ports:
   - name: https
-    port: 8443
+    port: 8081
     protocol: TCP
     targetPort: 8080
   - name: grpc
-    port: 8080
+    port: 8081
     protocol: TCP
     targetPort: 8080
   selector:
@@ -522,10 +522,10 @@ metadata:
 spec:
   ports:
   - name: https
-    port: 8080
+    port: 8081
     protocol: TCP
     targetPort: 8080
-    nodePort: 30080
+    nodePort: 30081
   selector:
     app.kubernetes.io/component: server
     app.kubernetes.io/name: argocd-server

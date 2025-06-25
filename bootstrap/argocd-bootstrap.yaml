@@ -388,6 +388,9 @@ spec:
         - argocd-repo-server:8081
         - --redis
         - argocd-redis:6379
+        - --insecure
+        - --loglevel
+        - info
         env:
         - name: ARGOCD_SERVER_INSECURE
           valueFrom:
@@ -446,10 +449,11 @@ spec:
           periodSeconds: 30
         resources:
           limits:
-            memory: 512Mi
-          requests:
-            cpu: 100m
+            cpu: 300m
             memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
         volumeMounts:
         - mountPath: /app/config/ssh
           name: ssh-known-hosts
@@ -458,6 +462,7 @@ spec:
         - mountPath: /tmp
           name: tmp
       serviceAccountName: argocd-server
+      terminationGracePeriodSeconds: 30
       volumes:
       - emptyDir: {}
         name: tmp
@@ -480,7 +485,7 @@ metadata:
 spec:
   ports:
   - name: https
-    port: 443
+    port: 8443
     protocol: TCP
     targetPort: 8080
   - name: grpc
@@ -538,9 +543,9 @@ spec:
       - command:
         - argocd-application-controller
         - --status-processors
-        - "20"
-        - --operation-processors
         - "10"
+        - --operation-processors
+        - "5"
         - --app-resync
         - "180"
         - --repo-server
@@ -548,6 +553,7 @@ spec:
         - --logformat
         - text
         - --loglevel
+        - info
         - info
         - --redis
         - argocd-redis:6379
@@ -598,11 +604,13 @@ spec:
           periodSeconds: 10
         resources:
           limits:
-            memory: 1Gi
-          requests:
-            cpu: 250m
+            cpu: 500m
             memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
       serviceAccountName: argocd-application-controller
+      terminationGracePeriodSeconds: 30
 ---
 # ConfigMaps for SSH, TLS, and GPG (empty but required)
 apiVersion: v1

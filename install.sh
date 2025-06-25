@@ -977,28 +977,6 @@ ${CYAN}MONITORING & MANAGEMENT:${NC}
 2. Check system health:
    ${YELLOW}./scripts/health-check.sh${NC}
 
-3. Generate Security Reports:
-   ${YELLOW}./scripts/container-security.sh${NC}
-
-${CYAN}DEVSECOPS FEATURES:${NC}
-
-1. Vulnerability Scanning (Trivy Operator):
-   ${YELLOW}kubectl get vulnerabilityreports --all-namespaces${NC}
-   
-2. Policy Enforcement (OPA Gatekeeper):
-   ${YELLOW}kubectl get constraints -A${NC}
-   
-3. CIS Benchmarking:
-   ${YELLOW}kubectl logs -n security-tools job/$(kubectl get job -n security-tools -l app.kubernetes.io/name=kube-bench -o=jsonpath='{.items[-1:].metadata.name}')${NC}
-   
-4. Security Dashboard:
-   Will be available at: https://<your-host>/security-dashboard/
-   
-5. Learn more about the DevSecOps features:
-   ${YELLOW}cat docs/devsecops-integration.md${NC}
-
-   ${YELLOW}./scripts/health-check.sh${NC}
-
 3. Create system backup:
    ${YELLOW}./scripts/backup.sh prod${NC}
 
@@ -1011,7 +989,7 @@ ${CYAN}DEVSECOPS FEATURES:${NC}
 ${CYAN}UPGRADING THE PLATFORM:${NC}
 
 An upgrade script has been created to help you update components:
-${YELLOW}./upgrade-platform.sh${NC}
+${YELLOW}./scripts/upgrade-platform.sh${NC}
 
 ${CYAN}TROUBLESHOOTING:${NC}
 
@@ -1063,9 +1041,9 @@ test_backup_restore() {
 create_upgrade_script() {
     print_header "CREATING UPGRADE HELPER SCRIPT"
     
-    log "Creating upgrade-platform.sh script..."
+    log "Creating upgrade-platform.sh script in scripts directory..."
     
-    cat << 'EOF' > upgrade-platform.sh
+    cat << 'EOF' > scripts/upgrade-platform.sh
 #!/bin/bash
 
 # Script for upgrading the AppDeploy Platform components
@@ -1165,8 +1143,7 @@ main() {
 main
 EOF
 
-    chmod +x upgrade-platform.sh
-    log "Upgrade script created successfully ✓"
+    chmod +x scripts/upgrade-platform.sh
 }
 
 verify_installation() {

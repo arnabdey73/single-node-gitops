@@ -3,30 +3,35 @@
 ## ✅ Applied Optimizations
 
 ### 1. Hardware-Specific Configurations
+
 - **Dell OpenManage Integration**: Complete OMSA installation and configuration
 - **IPMI Monitoring**: Full sensor access for temperature, fans, power, and voltage
 - **Hardware Health Monitoring**: Real-time system health tracking
 - **Thermal Management**: Optimized cooling and temperature monitoring
 
 ### 2. Performance Optimizations
+
 - **CPU Governor**: Set to performance mode for maximum throughput
 - **Memory Management**: Optimized for 32GB RAM with production workloads
 - **Storage I/O**: mq-deadline scheduler for optimized SSD/HDD performance
 - **Network Tuning**: BBR congestion control and increased buffer sizes
 
 ### 3. Kubernetes Enhancements
+
 - **Resource Limits**: Increased CPU/memory allocations for all components
 - **Pod Limits**: Increased to 250 pods per node
 - **Storage Allocation**: Enhanced PVC sizes (50GB Prometheus, 20GB Grafana)
 - **Storage**: Simplified with local-path provisioner for reliable local storage
 
 ### 4. Monitoring Stack Improvements
+
 - **Hardware Sensors**: Node exporter with IPMI and hwmon collectors
 - **Dell-Specific Dashboards**: Grafana dashboards for PowerEdge hardware
 - **Alerting Rules**: Comprehensive hardware failure detection
 - **Performance Metrics**: CPU, memory, disk, and network optimization tracking
 
 ### 5. System-Level Optimizations
+
 - **Kernel Parameters**: Optimized sysctl settings for high-performance workloads
 - **File Limits**: Increased open file and process limits
 - **Container Runtime**: Enhanced systemd limits for containerized workloads
@@ -49,6 +54,7 @@
 ### Hardware Monitoring Capabilities
 
 **New Monitoring Features:**
+
 - Real-time temperature monitoring (CPU, ambient, exhaust)
 - Fan speed and failure detection
 - Power consumption tracking
@@ -60,24 +66,28 @@
 ## 🔧 Available Scripts and Tools
 
 ### Bootstrap Scripts
+
 - `bootstrap/k3s-install.sh` - K3s installation with Dell optimizations
 - `bootstrap/dell-optimizations.sh` - Hardware-specific optimizations
 - `bootstrap/argocd-bootstrap.yaml` - ArgoCD deployment
 
 ### Management Scripts
+
 - `scripts/health-check.sh` - Enhanced with Dell hardware checks
 - `scripts/validate-dell-optimizations.sh` - Validation of all optimizations
 - `scripts/backup.sh` - Enhanced backup with parallel processing
 - `scripts/restore.sh` - Disaster recovery capabilities
 
 ### Configuration Files
+
 - `configs/network/sysctl-optimizations.conf` - System-level tuning
 - `configs/monitoring/dell-alerting-rules.yaml` - Hardware alerting
 - `configs/monitoring/node-exporter-dell-config.yaml` - Hardware monitoring
 
 ## 🎯 Performance Targets Achieved
 
-### For Dell PowerEdge R540 (16 cores, 32GB RAM):
+### For Dell PowerEdge R540 (16 cores, 32GB RAM)
+
 - ✅ **CPU Utilization**: Optimized for sustained high-performance workloads
 - ✅ **Memory Usage**: Efficient allocation for containerized applications
 - ✅ **Storage Performance**: Optimized I/O configuration
@@ -88,6 +98,7 @@
 ## 🚀 Next Steps
 
 ### 1. Repository Setup
+
 ```bash
 # Initialize git repository (if not done)
 git init
@@ -100,7 +111,9 @@ git push -u origin main
 ```
 
 ### 2. Update Repository URLs
+
 Update placeholder URLs in:
+
 - `applications/app-of-apps.yaml`
 - `applications/monitoring/application.yaml`
 - `applications/examples/webapp/application.yaml`
@@ -108,6 +121,7 @@ Update placeholder URLs in:
 - `README.md`
 
 ### 3. Deploy the Platform
+
 ```bash
 # Apply Dell optimizations
 sudo ./bootstrap/dell-optimizations.sh
@@ -126,12 +140,13 @@ kubectl apply -f applications/
 ```
 
 ### 4. Access Services
+
 - **ArgoCD**: `https://your-server-ip:8080` (admin/get-initial-password)
 - **Grafana**: `https://your-server-ip:3000` (admin/admin123)
 - **Dell OpenManage**: `https://your-server-ip:1311` (root/system-password)
 
-
 ### 5. Ongoing Maintenance
+
 - Monitor hardware health via Dell OpenManage and Grafana
 - Regular backup execution via `scripts/backup.sh`
 - Periodic validation with `scripts/validate-dell-optimizations.sh`
@@ -153,6 +168,7 @@ Your Dell PowerEdge R540 GitOps platform now includes:
 ## 📈 Expected Performance
 
 With these optimizations, your Dell PowerEdge R540 should achieve:
+
 - **Deployment Speed**: 2-3x faster application deployments
 - **Resource Efficiency**: 50-70% better resource utilization
 - **Monitoring Coverage**: 100% hardware and application visibility
@@ -161,6 +177,6 @@ With these optimizations, your Dell PowerEdge R540 should achieve:
 
 ---
 
-**Platform Status**: ✅ Production-Ready for Dell PowerEdge R540
-**Last Updated**: Applied comprehensive Dell PowerEdge R540 optimizations
+**Platform Status**: ✅ Production-Ready for Dell PowerEdge R540  
+**Last Updated**: Applied comprehensive Dell PowerEdge R540 optimizations  
 **Next Action**: Deploy and enjoy your production-ready single-node GitOps platform!

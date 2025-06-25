@@ -87,7 +87,7 @@ Use the automatically created upgrade script:
 
 ```bash
 # Upgrade all platform components
-./upgrade-platform.sh
+./scripts/upgrade-platform.sh
 ```
 
 This script handles:
@@ -146,7 +146,7 @@ kubectl logs job/dns-test -n default
 ## Maintenance Recommendations
 
 1. **Regular Health Checks**: Run `./scripts/health-check.sh` weekly
-2. **System Updates**: Use `./upgrade-platform.sh` for platform updates
+2. **System Updates**: Use `./scripts/upgrade-platform.sh` for platform updates
 3. **Certificate Management**: Monitor certificate expiration with `kubectl get secrets --field-selector type=kubernetes.io/tls -A`
 4. **Resource Monitoring**: Check namespace resource quotas regularly
 5. **Backup Data**: Create regular backups with `./scripts/backup.sh`

@@ -5,6 +5,7 @@ This guide covers the DevSecOps components integrated into the AppDeploy platfor
 ## Overview
 
 The AppDeploy platform incorporates DevSecOps principles through:
+
 - Container vulnerability scanning
 - Security policy enforcement
 - Compliance benchmarking
@@ -17,6 +18,7 @@ The AppDeploy platform incorporates DevSecOps principles through:
 Trivy Operator continuously scans your container images and Kubernetes resources for vulnerabilities.
 
 #### Key Features
+
 - Automated vulnerability scanning of container images
 - Integration with CI/CD pipeline
 - Customizable severity thresholds
@@ -37,6 +39,7 @@ kubectl describe vulnerabilityreport -n <namespace> <report-name>
 Open Policy Agent (OPA) Gatekeeper enforces security policies across your cluster.
 
 #### Included Policies
+
 - Prevention of privileged containers
 - Enforcement of resource limits
 - Required labels and annotations
@@ -80,6 +83,7 @@ kubectl port-forward svc/security-dashboard -n security-monitoring 8085:80
 #### Alert Rules
 
 Pre-configured alerts for:
+
 - Critical vulnerabilities
 - Security policy violations
 - CIS benchmark failures
@@ -88,20 +92,24 @@ Pre-configured alerts for:
 ## DevSecOps Workflow
 
 ### 1. Development Phase
+
 - Code is committed with security context requirements
 - Pre-commit hooks run static analysis
 
 ### 2. Build Phase
+
 - Container images are built and tagged
 - Trivy performs vulnerability scanning
 - Failed high-severity checks block the pipeline
 
 ### 3. Deployment Phase
+
 - OPA Gatekeeper validates against security policies
 - ArgoCD applies the configuration
 - Policy violations are reported and can block deployment
 
 ### 4. Runtime
+
 - Continuous vulnerability scanning
 - CIS benchmark checks
 - Network policy enforcement
@@ -116,6 +124,7 @@ Regular security reports can be generated using the container-security.sh script
 ```
 
 This generates a comprehensive security report including:
+
 - Vulnerability summary
 - Policy compliance status
 - CIS benchmark results
@@ -152,21 +161,24 @@ This generates a comprehensive security report including:
 ### Adding Custom Security Policies
 
 To add custom security policies, create new constraint templates in:
-```
+
+```bash
 applications/security/policies/
 ```
 
 ### Customizing Vulnerability Thresholds
 
 Edit the Trivy Operator configuration to adjust severity thresholds:
-```
+
+```bash
 applications/security/scanning/trivy-operator.yaml
 ```
 
 ### Adding Security Dashboards
 
 Add custom Grafana dashboard configurations to:
-```
+
+```bash
 applications/security/dashboard/
 ```
 

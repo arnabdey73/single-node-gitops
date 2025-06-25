@@ -3,6 +3,7 @@
 A complete GitOps-based DevOps platform designed for single-node deployments on Dell PowerEdge R540 hardware. This platform provides a solution for application deployment, monitoring, and management using K3s, ArgoCD, and other open source tools.
 
 ## 🌟 **Features**
+
 - **Git Repository Integration** with ArgoCD
 - **Kubernetes Dashboard** for cluster management  
 - **Container Registry Support** with security scanning
@@ -23,6 +24,7 @@ A complete GitOps-based DevOps platform designed for single-node deployments on 
 The fastest way to experience the power of AppDeploy POC:
 
 1. **Install the platform**:
+
    ```bash
    cd single-node-gitops
    chmod +x install.sh
@@ -30,6 +32,7 @@ The fastest way to experience the power of AppDeploy POC:
    ```
 
 2. **Open the dashboard**:
+
    ```bash
    ./scripts/dashboard-access.sh open
    ```
@@ -39,6 +42,7 @@ The fastest way to experience the power of AppDeploy POC:
 ### 🎯 **Platform Features**
 
 The platform includes:
+
 - ✅ Kubernetes deployment workflows
 - ✅ Real-time monitoring and analytics  
 - ✅ GitOps integration with ArgoCD
@@ -52,17 +56,20 @@ The platform includes:
 ### Standard Installation
 
 1. **Clone this repository**:
+
    ```bash
    git clone <repository-url>
    cd single-node-gitops
    ```
 
 2. **Bootstrap the cluster**:
+
    ```bash
    ./bootstrap/k3s-install.sh
    ```
 
 3. **Install ArgoCD**:
+
    ```bash
    kubectl apply -f bootstrap/argocd-bootstrap.yaml
    ```
@@ -124,6 +131,7 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
 - **🎯 Purpose**: Kubernetes cluster management and monitoring
 
 **⭐ Key Features**:
+
 - **Application deployment** and monitoring
 - **Resource management** for pods, deployments, services
 - **Real-time monitoring** and performance analytics  
@@ -131,6 +139,7 @@ If you're running on Dell PowerEdge R540 hardware, use these additional steps fo
 - **Node and pod metrics**
 
 **💼 Management Commands**:
+
 ```bash
 # Start the platform
 ./scripts/deployment-platform.sh start
@@ -308,13 +317,16 @@ Use the dashboard access script for easy URL and credential retrieval:
 ### **Platform Documentation**
 
 - [Installation Guide](docs/installation.md)
+- [Simplified Installation Guide](docs/simplified-installation.md)
 - [Architecture Overview](docs/architecture.md)  
 - [Application Lifecycle Management](docs/application-lifecycle.md)
 - [DevSecOps Integration](docs/devsecops-integration.md)
 - [Resource Consumption](docs/resource-consumption.md)
+- [Zero-Downtime Upgrades](docs/zero-downtime-upgrade.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Resource Management](docs/resource-management.md)
 - [Corner Case Mitigations](docs/corner-case-mitigations.md)
+- [Dell PowerEdge Optimization Summary](docs/dell-optimization-summary.md)
 
 ## 🔧 Management Scripts
 

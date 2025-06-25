@@ -26,11 +26,14 @@ top
 ### 1. K3s Installation Issues
 
 #### Problem: K3s fails to start
+
 **Symptoms:**
+
 - `systemctl status k3s` shows failed state
 - Nodes not appearing in `kubectl get nodes`
 
 **Solutions:**
+
 ```bash
 # Check K3s logs
 sudo journalctl -u k3s -f
@@ -47,7 +50,9 @@ sudo ufw allow 6443/tcp  # K3s API server
 ```
 
 #### Problem: kubectl command not found
+
 **Solutions:**
+
 ```bash
 # Verify K3s installation
 which kubectl
@@ -64,11 +69,14 @@ echo 'export PATH=$PATH:/usr/local/bin' >> ~/.bashrc
 ### 2. ArgoCD Issues
 
 #### Problem: ArgoCD pods stuck in Pending
+
 **Symptoms:**
+
 - ArgoCD pods show `Pending` status
 - `kubectl describe pod` shows scheduling issues
 
 **Solutions:**
+
 ```bash
 # Check node resources
 kubectl describe nodes
@@ -85,7 +93,9 @@ kubectl delete pod -l app.kubernetes.io/name=argocd-server -n argocd
 ```
 
 #### Problem: Cannot access ArgoCD UI
+
 **Solutions:**
+
 ```bash
 # Check pod status
 kubectl get pods -n argocd
@@ -103,11 +113,14 @@ kubectl logs -l app.kubernetes.io/name=argocd-server -n argocd
 ### 3. Storage Issues
 
 #### Problem: Pods stuck due to volume mount failures
+
 **Symptoms:**
+
 - Pods in `ContainerCreating` state
 - Volume mount errors in events
 
 **Solutions:**
+
 ```bash
 # Check storage class
 kubectl get storageclass
@@ -126,7 +139,9 @@ df -h /var/lib/rancher/k3s/storage
 ```
 
 #### Problem: Local-path provisioner issues
+
 **Solutions:**
+
 ```bash
 # Check local-path storage class
 kubectl describe sc local-path
@@ -141,12 +156,15 @@ sudo chmod 755 /var/lib/rancher/k3s/storage
 ### 4. Networking Issues
 
 #### Problem: Pods cannot communicate
+
 **Symptoms:**
+
 - Services unreachable
 - DNS resolution failures
 - Network timeouts
 
 **Solutions:**
+
 ```bash
 # Check CNI plugin status
 kubectl get pods -n kube-system | grep -E "(flannel|calico|cilium)"
@@ -162,7 +180,9 @@ kubectl delete pods -n kube-system -l k8s-app=flannel
 ```
 
 #### Problem: External access not working
+
 **Solutions:**
+
 ```bash
 # Check Traefik status (K3s ingress)
 kubectl get pods -n kube-system | grep traefik
@@ -180,11 +200,14 @@ kubectl port-forward svc/<service-name> -n <namespace> <local-port>:<service-por
 ### 5. Application Deployment Issues
 
 #### Problem: ArgoCD applications stuck in sync
+
 **Symptoms:**
+
 - Applications show `OutOfSync` status
 - Sync operations fail
 
 **Solutions:**
+
 ```bash
 # Check ArgoCD application status
 kubectl get applications -n argocd
@@ -200,7 +223,9 @@ kubectl get events --sort-by='.lastTimestamp' -A
 ```
 
 #### Problem: Pod image pull failures
+
 **Solutions:**
+
 ```bash
 # Check image pull secrets
 kubectl get secrets -A | grep docker
@@ -218,7 +243,9 @@ sudo crictl pull <image-name>
 ### 6. Monitoring Stack Issues
 
 #### Problem: Prometheus not scraping targets
+
 **Solutions:**
+
 ```bash
 # Check Prometheus configuration
 kubectl get configmap prometheus-config -n monitoring -o yaml
@@ -233,7 +260,9 @@ kubectl port-forward svc/prometheus -n monitoring 9090:9090
 ```
 
 #### Problem: Grafana dashboards not loading
+
 **Solutions:**
+
 ```bash
 # Check Grafana pod logs
 kubectl logs -l app=grafana -n monitoring
@@ -251,6 +280,7 @@ kubectl port-forward svc/grafana -n monitoring 3000:3000
 ## Resource Management
 
 ### Memory Issues
+
 ```bash
 # Check memory usage
 kubectl top nodes
@@ -264,6 +294,7 @@ kubectl patch deployment <deployment-name> -p '{"spec":{"template":{"spec":{"con
 ```
 
 ### Disk Space Issues
+
 ```bash
 # Check disk usage
 df -h
@@ -281,6 +312,7 @@ sudo find / -type f -size +100M 2>/dev/null
 ## Debugging Tools
 
 ### Essential Commands
+
 ```bash
 # Get detailed pod information
 kubectl describe pod <pod-name> -n <namespace>
@@ -300,6 +332,7 @@ kubectl top pods -A
 ```
 
 ### Network Debugging
+
 ```bash
 # Test connectivity between pods
 kubectl run netshoot --image=nicolaka/netshoot -it --rm
@@ -314,6 +347,7 @@ kubectl get endpoints -A
 ## Log Analysis
 
 ### System Logs
+
 ```bash
 # K3s service logs
 sudo journalctl -u k3s -f
@@ -326,6 +360,7 @@ sudo tail -f /var/log/syslog
 ```
 
 ### Application Logs
+
 ```bash
 # All pods in namespace
 kubectl logs -l app=<app-label> -n <namespace> --tail=100
@@ -340,6 +375,7 @@ kubectl logs <pod-name> -n <namespace> --previous
 ## Recovery Procedures
 
 ### Cluster Recovery
+
 ```bash
 # Backup etcd
 sudo k3s etcd-snapshot save
@@ -352,6 +388,7 @@ sudo k3s server \
 ```
 
 ### Pod Recovery
+
 ```bash
 # Restart deployment
 kubectl rollout restart deployment <deployment-name> -n <namespace>
@@ -367,6 +404,7 @@ kubectl scale deployment <deployment-name> --replicas=1 -n <namespace>
 ## Getting Help
 
 ### Log Collection
+
 ```bash
 # Collect cluster info
 kubectl cluster-info dump > cluster-dump.yaml
@@ -379,12 +417,14 @@ kubectl logs --all-containers=true --selector app=<app> -n <namespace> > app-log
 ```
 
 ### Community Resources
+
 - [K3s Documentation](https://docs.k3s.io/)
 - [ArgoCD Documentation](https://argo-cd.readthedocs.io/)
 - [Kubernetes Troubleshooting](https://kubernetes.io/docs/tasks/debug-application-cluster/)
 - [Local Path Provisioner](https://github.com/rancher/local-path-provisioner)
 
 ### Emergency Contacts
+
 - Check project README for maintainer contacts
 - Open issues in the project repository
 - Consult team documentation for escalation procedures

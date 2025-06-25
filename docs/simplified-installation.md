@@ -5,12 +5,14 @@ This guide explains how to install the AppDeploy platform using the simplified i
 ## System Requirements
 
 ### Hardware
+
 - **CPU**: 2+ cores (4+ recommended)
 - **RAM**: 4GB minimum (8GB+ recommended)
 - **Storage**: 50GB+ available space
 - **Network**: Internet connectivity required
 
 ### Software
+
 - Ubuntu 20.04+ (or compatible Linux distribution)
 - sudo privileges
 
@@ -62,22 +64,27 @@ The `install.sh` script automates all of these steps:
 After installation completes, you can:
 
 1. Access the AppDeploy dashboard:
+
    ```bash
    ./scripts/dashboard-access.sh open
    ```
 
 2. Access ArgoCD:
+
    ```bash
    kubectl port-forward svc/argocd-server -n argocd 8080:443
    ```
-   Then open: https://localhost:8080
+
+   Then open: `https://localhost:8080`
 
 3. Monitor application status:
+
    ```bash
    kubectl get applications -n argocd
    ```
 
 4. Check system health:
+
    ```bash
    ./scripts/health-check.sh
    ```

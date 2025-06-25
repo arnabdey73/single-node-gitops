@@ -5,12 +5,14 @@ This guide walks you through setting up the single-node GitOps platform from scr
 ## System Requirements
 
 ### Hardware
+
 - **CPU**: 2+ cores (4+ recommended)
 - **RAM**: 4GB minimum (8GB+ recommended)
 - **Storage**: 50GB+ available space
 - **Network**: Internet connectivity required
 
 ### Software
+
 - Ubuntu 20.04+ (or compatible Linux distribution)
 - sudo privileges
 - curl, wget, git
@@ -52,6 +54,7 @@ sudo ipmitool sensor list | head -10
 ```
 
 **Dell PowerEdge R540 Features Enabled:**
+
 - Hardware monitoring via Dell OpenManage Server Administrator
 - IPMI sensor monitoring for temperature, fans, and power
 - Optimized disk I/O scheduler for high-performance storage
@@ -231,6 +234,7 @@ sudo ipmitool sensor list | grep -E "(Temp|Fan|Power)"
 ```
 
 **Expected Results:**
+
 - All validation checks should pass with minimal warnings
 - Hardware sensors should be accessible via IPMI
 - Dell OpenManage web interface should be accessible

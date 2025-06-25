@@ -1,6 +1,7 @@
 # Application Lifecycle Management
 
-This document outlines the processes for onboarding (adding) and offloading (removing) applications on the AppDeploy POC platform.
+This document outlines the processes for onboarding (adding) and offloading (removing)
+applications on the AppDeploy POC platform.
 
 ## Application Onboarding Process
 
@@ -158,6 +159,7 @@ kubectl delete application -n argocd your-application-name
    ```
 
 3. Check for any persistent volumes that might need manual cleanup:
+
    ```bash
    kubectl get pv | grep your-application-namespace
    ```
@@ -167,6 +169,7 @@ kubectl delete application -n argocd your-application-name
 Some resources might require manual cleanup:
 
 1. **Persistent Volumes** (if `Retain` policy is used)
+
    ```bash
    kubectl delete pv <persistent-volume-name>
    ```

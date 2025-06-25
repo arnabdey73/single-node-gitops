@@ -284,6 +284,9 @@ Use the dashboard access scripts for easy URL and credential retrieval:
 # Get SSH tunnel instructions for the AppDeploy dashboard
 ./scripts/access-appdeploy.sh tunnel
 
+# Diagnose issues with dashboard or platform
+./scripts/access-appdeploy.sh diagnose
+
 # Check overall system health
 ./scripts/health-check.sh
 ```

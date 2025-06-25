@@ -118,6 +118,9 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 # Access at: http://localhost:8082
 
+# If you run into issues accessing the dashboard:
+./scripts/access-appdeploy.sh diagnose
+
 # Port forward to access ArgoCD UI
 kubectl port-forward svc/argocd-server -n argocd 8081:8081
 

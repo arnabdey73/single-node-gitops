@@ -18,6 +18,8 @@ spec:
     schema:
       openAPIV3Schema:
         description: Application is a definition of Application resource.
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
         properties:
           apiVersion:
             type: string
@@ -27,8 +29,12 @@ spec:
             type: object
           spec:
             description: ApplicationSpec represents desired application state.
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
             properties:
               destination:
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
                 properties:
                   name:
                     type: string
@@ -36,36 +42,35 @@ spec:
                     type: string
                   server:
                     type: string
-                type: object
               project:
                 type: string
               source:
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
                 properties:
                   chart:
                     type: string
+                  directory:
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
                   helm:
                     type: object
+                    x-kubernetes-preserve-unknown-fields: true
                   path:
                     type: string
                   repoURL:
                     type: string
                   targetRevision:
                     type: string
-                required:
-                - repoURL
+              syncPolicy:
                 type: object
-            required:
-            - destination
-            - project
-            - source
-            type: object
+                x-kubernetes-preserve-unknown-fields: true
           status:
             description: ApplicationStatus contains status information for the application.
             type: object
+            x-kubernetes-preserve-unknown-fields: true
         required:
         - metadata
-        - spec
-        type: object
     served: true
     storage: true
     subresources:
@@ -91,6 +96,8 @@ spec:
     schema:
       openAPIV3Schema:
         description: AppProject provides a logical grouping of applications.
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
         properties:
           apiVersion:
             type: string
@@ -100,11 +107,16 @@ spec:
             type: object
           spec:
             description: AppProjectSpec is the specification of an AppProject.
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
             properties:
               description:
                 type: string
               destinations:
+                type: array
                 items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
                   properties:
                     name:
                       type: string
@@ -112,19 +124,13 @@ spec:
                       type: string
                     server:
                       type: string
-                  type: object
-                type: array
               sourceRepos:
+                type: array
                 items:
                   type: string
-                type: array
-            required:
-            - destinations
-            - sourceRepos
-            type: object
           status:
             description: AppProjectStatus contains status information for the AppProject.
             type: object
-        type: object
+            x-kubernetes-preserve-unknown-fields: true
     served: true
     storage: true

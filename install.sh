@@ -786,9 +786,25 @@ deploy_applications() {
     
     log "Deploying applications..."
     
-    # Verify ArgoCD is operational before proceeding
-    if ! kubectl get pod -l app.kubernetes.io/name=argocd-server -n argocd --no-headers &>/dev/null; then
-        warn "ArgoCD may not be fully deployed. Applications may not deploy correctly."
+    # Verify ArgoCD CRDs are installed properly
+    log "Ensuring ArgoCD CRDs are properly installed..."
+    kubectl apply -f bootstrap/argocd-crd.yaml
+    
+    # Wait for ArgoCD server to be fully operational
+    log "Waiting for ArgoCD server to be fully operational..."
+    if ! kubectl wait --for=condition=available --timeout=300s -n argocd deployment/argocd-server 2>/dev/null; then
+        warn "ArgoCD server is not fully deployed. Applications may not deploy correctly."
+        read -p "Continue with application deployment? (y/n): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            error "Application deployment aborted."
+        fi
+    fi
+    
+    # Wait for ArgoCD application controller to be ready
+    log "Waiting for ArgoCD application-controller to be fully operational..."
+    if ! kubectl wait --for=condition=available --timeout=300s -n argocd deployment/argocd-application-controller 2>/dev/null; then
+        warn "ArgoCD application controller is not fully deployed. Applications may not deploy correctly."
         read -p "Continue with application deployment? (y/n): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -797,12 +813,18 @@ deploy_applications() {
     fi
     
     # Apply with retry logic
-    local retries=3
+    local retries=5  # Increased retries
     local attempt=1
     local success=false
     
     while [ $attempt -le $retries ] && [ "$success" = false ]; do
         log "Attempt $attempt: Deploying app-of-apps..."
+        
+        # Add a longer delay between retries to allow CRDs to fully establish
+        if [ $attempt -gt 1 ]; then
+            log "Waiting for 20 seconds to ensure CRDs are fully established..."
+            sleep 20
+        fi
         
         if kubectl apply -f applications/app-of-apps.yaml; then
             success=true
@@ -813,6 +835,7 @@ deploy_applications() {
             if [ $attempt -eq $retries ]; then
                 warn "Failed to deploy applications after $retries attempts."
                 warn "You may need to manually apply: kubectl apply -f applications/app-of-apps.yaml"
+                warn "Make sure ArgoCD CRDs are properly installed with: kubectl apply -f bootstrap/argocd-crd.yaml"
                 break
             else
                 log "Retrying in 10 seconds..."
@@ -1142,6 +1165,12 @@ upgrade_argocd() {
 # Upgrading applications
 upgrade_applications() {
     log "Upgrading applications..."
+    
+    # Ensure CRDs are properly installed
+    log "Ensuring ArgoCD CRDs are up-to-date..."
+    kubectl apply -f bootstrap/argocd-crd.yaml
+    
+    log "Applying app-of-apps..."
     kubectl apply -f applications/app-of-apps.yaml
     
     log "Refreshing all ArgoCD applications..."

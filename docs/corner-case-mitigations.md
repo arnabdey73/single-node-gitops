@@ -112,7 +112,7 @@ To verify these mitigations are working correctly:
 
 ```bash
 # Verify installation script logs are being captured
-cat appdeploy_install_*.log
+cat /var/log/appdeploy/appdeploy_install_*.log || cat /tmp/appdeploy_install_*.log
 
 # Check for proxy configuration (if applicable)
 cat /etc/systemd/system/containerd.service.d/proxy.conf
@@ -155,7 +155,7 @@ kubectl logs job/dns-test -n default
 
 If issues arise:
 
-1. Check installation logs: `cat appdeploy_install_*.log`
+1. Check installation logs: `cat /var/log/appdeploy/appdeploy_install_*.log || cat /tmp/appdeploy_install_*.log`
 2. Run enhanced health checks: `./scripts/health-check.sh`
 3. Attempt automatic recovery: `./scripts/node-recovery.sh`
 4. Check system events: `kubectl get events --sort-by='.lastTimestamp'`

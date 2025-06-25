@@ -12,8 +12,12 @@ ARGOCD_VERSION="v2.8.0"
 NODE_EXPORTER_VERSION="1.6.0"
 
 # Log file for installation
-LOG_FILE="appdeploy_install_$(date +'%Y%m%d_%H%M%S').log"
+LOG_DIR="/var/log/appdeploy"
+mkdir -p "$LOG_DIR" 2>/dev/null || LOG_DIR="/tmp"
+LOG_FILE="${LOG_DIR}/appdeploy_install_$(date +'%Y%m%d_%H%M%S').log"
+touch "$LOG_FILE" 2>/dev/null || LOG_FILE="/tmp/appdeploy_install_$(date +'%Y%m%d_%H%M%S').log" 
 touch "$LOG_FILE"
+echo "Installation logs will be saved to: $LOG_FILE"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 # Colors for output

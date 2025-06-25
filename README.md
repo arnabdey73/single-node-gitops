@@ -28,7 +28,7 @@ The fastest way to experience the power of AppDeploy POC:
    ```bash
    cd single-node-gitops
    chmod +x install.sh
-   ./install.sh 2>&1 | tee platform-installation.log
+   ./install.sh
    ```
 
 2. **Open the dashboard**:

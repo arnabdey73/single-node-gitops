@@ -594,7 +594,8 @@ deploy_argocd() {
     
     log "Deploying ArgoCD version ${ARGOCD_VERSION}..."
     
-    # Determine which ArgoCD manifest to use based on version
+    # Determine which ArgoCD manifests to use
+    local argocd_crd_manifest="bootstrap/argocd-crd.yaml"
     local argocd_manifest="bootstrap/argocd-bootstrap.yaml"
     
     # Apply with retry logic
@@ -602,8 +603,17 @@ deploy_argocd() {
     local attempt=1
     local success=false
     
+    # First apply the CRDs
+    log "Installing ArgoCD Custom Resource Definitions..."
+    if kubectl apply -f $argocd_crd_manifest; then
+        log "ArgoCD CRDs installed successfully"
+    else
+        warn "Failed to install ArgoCD CRDs. Will continue with main deployment."
+    fi
+    
+    # Now apply the main ArgoCD resources
     while [ $attempt -le $retries ] && [ "$success" = false ]; do
-        log "Attempt $attempt: Deploying ArgoCD..."
+        log "Attempt $attempt: Deploying ArgoCD components..."
         
         if kubectl apply -f $argocd_manifest; then
             success=true
@@ -1111,7 +1121,21 @@ upgrade_k3s() {
 # Upgrading ArgoCD
 upgrade_argocd() {
     log "Upgrading ArgoCD..."
+    
+    # First apply CRDs to ensure they exist before other resources
+    log "  Applying ArgoCD CRDs..."
+    kubectl apply -f bootstrap/argocd-crd.yaml
+    
+    # Then apply main ArgoCD components
+    log "  Applying ArgoCD components..."
     kubectl apply -f bootstrap/argocd-bootstrap.yaml
+    
+    # Wait for ArgoCD server to become available
+    log "  Waiting for ArgoCD server to start..."
+    kubectl -n argocd wait --for=condition=available --timeout=300s deployment/argocd-server
+    
+    # Restart components to ensure they pick up any configuration changes
+    log "  Restarting ArgoCD components..."
     kubectl -n argocd rollout restart deployment argocd-server argocd-repo-server argocd-application-controller
 }
 

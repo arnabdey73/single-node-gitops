@@ -71,7 +71,12 @@ The platform includes:
 3. **Install ArgoCD**:
 
    ```bash
-   kubectl apply -f bootstrap/argocd-bootstrap.yaml
+   # Use the deployment script for proper installation sequence
+   ./bootstrap/deploy-argocd.sh
+   
+   # Alternatively, you can perform the steps manually:
+   kubectl apply -f bootstrap/argocd-crd.yaml        # Install CRDs first
+   kubectl apply -f bootstrap/argocd-bootstrap.yaml  # Then install ArgoCD components
    ```
 
 4. **Deploy applications**:

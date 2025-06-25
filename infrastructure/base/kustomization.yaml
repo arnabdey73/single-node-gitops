@@ -8,7 +8,7 @@ metadata:
 
 resources:
   - namespace.yaml
-  - storage-class.yaml
+  - platform-storage.yaml
 
 commonLabels:
   app.kubernetes.io/part-of: single-node-gitops

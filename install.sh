@@ -505,6 +505,18 @@ EOF
 deploy_base_infrastructure() {
     print_header "DEPLOYING BASE INFRASTRUCTURE"
     
+    # Configure StorageClass first (K3s already creates local-path)
+    log "Configuring StorageClass..."
+    
+    # Make local-path the default StorageClass
+    kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+    
+    # Create the platform storage directory
+    log "Creating platform storage directory..."
+    mkdir -p /opt/platform-storage
+    chmod 755 /opt/platform-storage
+    
+    # Apply other infrastructure
     log "Applying base infrastructure..."
     
     # Attempt to apply base infrastructure with retry logic

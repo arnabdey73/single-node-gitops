@@ -153,13 +153,13 @@ check_node_resources() {
         return
     fi
     
-    local node_info=$(kubectl top nodes --no-headers 2>/dev/null)
-    
-    while IFS= read -r line; do
+    # Get node info and process
+    kubectl top nodes --no-headers 2>/dev/null | while read -r line; do
         if [ -n "$line" ]; then
-            local node=$(echo "$line" | awk '{print $1}')
-            local cpu_usage=$(echo "$line" | awk '{print $2}' | sed 's/[^0-9]//g')
-            local memory_usage=$(echo "$line" | awk '{print $4}' | sed 's/[^0-9]//g')
+            # Extract node name, CPU and memory usage
+            node=$(echo "$line" | awk '{print $1}')
+            cpu_usage=$(echo "$line" | awk '{print $2}' | sed 's/[^0-9]//g')
+            memory_usage=$(echo "$line" | awk '{print $4}' | sed 's/[^0-9]//g')
             
             # Check CPU usage (warn if > 80%)
             if [ "$cpu_usage" -gt 80 ]; then
@@ -175,7 +175,7 @@ check_node_resources() {
                 log_success "Node $node memory usage: ${memory_usage}%"
             fi
         fi
-    done <<< "$node_info"
+    done
 }
 
 # Function to check disk space

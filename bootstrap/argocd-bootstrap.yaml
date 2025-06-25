@@ -646,3 +646,21 @@ metadata:
   namespace: argocd
 data:
   # Add GPG keys here
+---
+# Add missing argocd-secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-secret
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-secret
+    app.kubernetes.io/part-of: argocd
+stringData:
+  # Default admin password is 'admin'
+  # This is the bcrypt hash of 'admin'
+  admin.password: $2a$10$hDj12Tw9xVmvybSahN1Y0.f9DZixxN8oybyA32Uy/eqWklFU4Mo8O
+  admin.passwordMtime: '2025-06-25T11:00:00Z'
+  # Server signing and encryption keys
+  server.secretkey: "change-me-to-a-random-string"
+type: Opaque

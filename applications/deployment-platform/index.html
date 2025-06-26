@@ -620,7 +620,7 @@
     <script>
         // Kubernetes API configuration
         const K8S_API_BASE = '/api/v1';
-        const ARGOCD_API_BASE = '/api/v1/namespaces/argocd/services/http:argocd-server:80/proxy/api/v1';
+        const ARGOCD_API_BASE = '/api/v1/namespaces/argocd/services/https:argocd-server:8080/proxy/api/v1';
         
         class AppDeployDashboard {
             constructor() {
@@ -970,9 +970,8 @@
 
         // Global functions for CTA buttons
         function openArgoCD() {
-            const protocol = window.location.protocol;
             const hostname = window.location.hostname;
-            const argocdUrl = `${protocol}//${hostname}:30081`;
+            const argocdUrl = `https://${hostname}:30415`;
             
             window.open(argocdUrl, '_blank');
         }

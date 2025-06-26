@@ -163,13 +163,37 @@ setup_minimal_dashboard() {
         
         # Create a ConfigMap for the dashboard HTML (force update)
         if [ -f "applications/deployment-platform/index.html" ]; then
-            info "Updating dashboard ConfigMap with modern HTML dashboard..."
+            info "Force updating dashboard ConfigMap with modern HTML dashboard..."
+            
+            # Delete existing ConfigMap completely
             kubectl delete configmap deployment-platform-config -n deployment-platform 2>/dev/null || true
+            sleep 2
+            
+            # Verify HTML file size to ensure it's the full version
+            local html_size=$(wc -l < applications/deployment-platform/index.html)
+            info "Dashboard HTML file size: $html_size lines"
+            
+            if [ $html_size -gt 800 ]; then
+                success "Confirmed: Using full modern dashboard (${html_size} lines)"
+            else
+                warn "HTML file seems small (${html_size} lines) - might not be the full version"
+            fi
+            
+            # Create new ConfigMap from file
             kubectl create configmap deployment-platform-config -n deployment-platform --from-file=index.html=applications/deployment-platform/index.html
-            success "Modern dashboard ConfigMap created successfully"
+            
+            # Verify ConfigMap was created
+            if kubectl get configmap deployment-platform-config -n deployment-platform &>/dev/null; then
+                success "Modern dashboard ConfigMap created successfully"
+            else
+                error "Failed to create ConfigMap"
+                return 1
+            fi
         else
-            warn "Dashboard HTML file not found, using basic dashboard"
-            kubectl create configmap deployment-platform-config -n deployment-platform --from-literal=index.html="<!DOCTYPE html><html><head><title>AppDeploy Dashboard</title></head><body><h1>AppDeploy Dashboard</h1><p>Real dashboard will be deployed via ArgoCD</p></body></html>" || true
+            warn "Dashboard HTML file not found at applications/deployment-platform/index.html"
+            warn "Using basic fallback dashboard"
+            kubectl delete configmap deployment-platform-config -n deployment-platform 2>/dev/null || true
+            kubectl create configmap deployment-platform-config -n deployment-platform --from-literal=index.html="<!DOCTYPE html><html><head><title>AppDeploy Dashboard</title></head><body><h1>AppDeploy Dashboard</h1><p>Real dashboard will be deployed via ArgoCD</p></body></html>"
         fi
         
         # Apply the deployment manifests
@@ -204,24 +228,48 @@ EOF
         fi
         
         success "AppDeploy dashboard created with real-time Kubernetes data"
-        info "Waiting for the deployment to be ready..."
+        info "Forcing deployment restart to pick up new ConfigMap..."
         
         # Force restart the deployment to pick up new ConfigMap
         kubectl rollout restart deployment/deployment-platform -n deployment-platform 2>/dev/null || true
-        sleep 5
         
-        # Check if deployment is ready
-        kubectl rollout status deployment/deployment-platform -n deployment-platform --timeout=60s || true
+        # Wait for rollout to complete
+        info "Waiting for deployment rollout to complete..."
+        kubectl rollout status deployment/deployment-platform -n deployment-platform --timeout=120s
+        
+        # Delete all pods to force complete refresh
+        info "Forcing pod refresh to ensure new ConfigMap is loaded..."
+        kubectl delete pods -n deployment-platform -l app.kubernetes.io/name=deployment-platform 2>/dev/null || true
+        sleep 10
+        
+        # Wait for new pods to be ready
+        kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=deployment-platform -n deployment-platform --timeout=60s || true
     else
         success "AppDeploy dashboard service already exists"
         
         # Update ConfigMap to ensure we have the latest dashboard
         if [ -f "applications/deployment-platform/index.html" ]; then
-            info "Updating existing dashboard with modern HTML..."
+            info "Force updating existing dashboard with modern HTML..."
+            
+            # Delete existing ConfigMap completely
             kubectl delete configmap deployment-platform-config -n deployment-platform 2>/dev/null || true
+            sleep 2
+            
+            # Verify HTML file size
+            local html_size=$(wc -l < applications/deployment-platform/index.html)
+            info "Dashboard HTML file size: $html_size lines"
+            
+            # Create new ConfigMap
             kubectl create configmap deployment-platform-config -n deployment-platform --from-file=index.html=applications/deployment-platform/index.html
+            
+            # Force complete restart
             kubectl rollout restart deployment/deployment-platform -n deployment-platform 2>/dev/null || true
-            success "Dashboard ConfigMap updated with modern version"
+            kubectl delete pods -n deployment-platform -l app.kubernetes.io/name=deployment-platform 2>/dev/null || true
+            
+            success "Dashboard ConfigMap forcefully updated with modern version"
+            info "Waiting for pods to restart with new dashboard..."
+            sleep 10
+            kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=deployment-platform -n deployment-platform --timeout=60s || true
         fi
         
         if [[ "$service_type" == "NodePort" ]]; then
@@ -233,13 +281,25 @@ EOF
     fi
     
     echo
-    info "You can now access the dashboard using:"
+    info "🌐 Dashboard Access Information:"
     if [[ "$service_type" == "NodePort" ]]; then
         local node_ip=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}' 2>/dev/null || echo "<NODE-IP>")
-        echo -e "${YELLOW}http://${node_ip}:30080${NC}"
-        info "This URL should be accessible from any computer on your local network"
+        echo
+        success "Dashboard is accessible from your Windows desktop at:"
+        echo -e "  ${GREEN}🔗 http://${node_ip}:30080${NC}"
+        echo
+        info "📋 Access Instructions:"
+        echo "  1. Open Chrome on your Windows desktop"
+        echo "  2. Navigate to: http://${node_ip}:30080"
+        echo "  3. The dashboard should load with modern UI and real-time data"
+        echo
+        info "🔍 Troubleshooting:"
+        echo "  - If you can't access it, check your network firewall"
+        echo "  - Ensure port 30080 is not blocked"
+        echo "  - Try from the Ubuntu server first: curl http://localhost:30080"
     else
-        echo -e "${YELLOW}./scripts/access-appdeploy.sh local${NC}"
+        echo -e "${YELLOW}For network access from Windows desktop, run:${NC}"
+        echo -e "${YELLOW}./scripts/access-appdeploy.sh setup nodeport${NC}"
     fi
     echo
     info "For the full platform experience, please run the complete installation:"

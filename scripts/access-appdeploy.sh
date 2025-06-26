@@ -161,9 +161,12 @@ setup_minimal_dashboard() {
     if ! kubectl get service deployment-platform -n deployment-platform &> /dev/null; then
         info "Creating AppDeploy dashboard service..."
         
-        # Create a ConfigMap for the dashboard HTML
+        # Create a ConfigMap for the dashboard HTML (force update)
         if [ -f "applications/deployment-platform/index.html" ]; then
-            kubectl create configmap deployment-platform-config -n deployment-platform --from-file=index.html=applications/deployment-platform/index.html || true
+            info "Updating dashboard ConfigMap with modern HTML dashboard..."
+            kubectl delete configmap deployment-platform-config -n deployment-platform 2>/dev/null || true
+            kubectl create configmap deployment-platform-config -n deployment-platform --from-file=index.html=applications/deployment-platform/index.html
+            success "Modern dashboard ConfigMap created successfully"
         else
             warn "Dashboard HTML file not found, using basic dashboard"
             kubectl create configmap deployment-platform-config -n deployment-platform --from-literal=index.html="<!DOCTYPE html><html><head><title>AppDeploy Dashboard</title></head><body><h1>AppDeploy Dashboard</h1><p>Real dashboard will be deployed via ArgoCD</p></body></html>" || true
@@ -202,12 +205,24 @@ EOF
         
         success "AppDeploy dashboard created with real-time Kubernetes data"
         info "Waiting for the deployment to be ready..."
+        
+        # Force restart the deployment to pick up new ConfigMap
+        kubectl rollout restart deployment/deployment-platform -n deployment-platform 2>/dev/null || true
         sleep 5
         
         # Check if deployment is ready
         kubectl rollout status deployment/deployment-platform -n deployment-platform --timeout=60s || true
     else
         success "AppDeploy dashboard service already exists"
+        
+        # Update ConfigMap to ensure we have the latest dashboard
+        if [ -f "applications/deployment-platform/index.html" ]; then
+            info "Updating existing dashboard with modern HTML..."
+            kubectl delete configmap deployment-platform-config -n deployment-platform 2>/dev/null || true
+            kubectl create configmap deployment-platform-config -n deployment-platform --from-file=index.html=applications/deployment-platform/index.html
+            kubectl rollout restart deployment/deployment-platform -n deployment-platform 2>/dev/null || true
+            success "Dashboard ConfigMap updated with modern version"
+        fi
         
         if [[ "$service_type" == "NodePort" ]]; then
             info "Updating service to NodePort type..."

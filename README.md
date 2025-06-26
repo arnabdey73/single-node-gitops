@@ -4,6 +4,7 @@ A complete GitOps-based DevOps platform designed for single-node deployments on 
 
 ## 🌟 **Features**
 
+- **Modern Interactive Dashboard** with real-time data, animations, and quick access buttons
 - **Git Repository Integration** with ArgoCD
 - **Kubernetes Dashboard** for cluster management  
 - **Container Registry Support** with security scanning
@@ -31,11 +32,22 @@ The fastest way to experience the power of AppDeploy POC:
    ./install.sh
    ```
 
-2. **Open the dashboard**:
+2. **Access the modern dashboard**:
 
    ```bash
-   ./scripts/dashboard-access.sh open
+   # For local access with port-forwarding
+   ./scripts/access-appdeploy.sh local
+   
+   # For network access (recommended for demos)
+   ./scripts/access-appdeploy.sh setup nodeport
    ```
+
+   The dashboard features:
+   - 🎨 **Modern responsive design** with animations
+   - 📊 **Real-time application status** and metrics
+   - 🚀 **Quick access buttons** to ArgoCD and Grafana
+   - 💾 **Live system health** monitoring
+   - 🔄 **Auto-refreshing data** from Kubernetes API
 
 3. **Start deploying applications** through the modern web interface!
 

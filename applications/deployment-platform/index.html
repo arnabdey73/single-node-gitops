@@ -107,11 +107,68 @@
             box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
         }
 
+        .deploy-btn.grafana-btn {
+            background: #ff6600;
+            margin-left: 10px;
+        }
+
+        .deploy-btn.grafana-btn:hover {
+            background: #e55a00;
+            box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3);
+        }
+
         /* Main Content */
         .main-content {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
+        }
+
+        /* Quick Access Section */
+        .quick-access-section {
+            margin-bottom: 2rem;
+        }
+
+        .quick-access-section h2 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .quick-access-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .access-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .access-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .access-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .access-card h3 {
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .access-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
         }
 
         /* Stats Grid */
@@ -430,6 +487,7 @@
                 <a href="#applications" class="nav-link">Applications</a>
                 <a href="#monitoring" class="nav-link">Monitoring</a>
                 <button class="deploy-btn" onclick="openArgoCD()">Deploy New App</button>
+                <button class="deploy-btn grafana-btn" onclick="openGrafana()">Open Grafana</button>
             </nav>
         </div>
     </header>
@@ -463,6 +521,31 @@
                 <div class="stat-content">
                     <h3 id="memory-usage">-</h3>
                     <p>Memory Usage</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Access Section -->
+        <section class="quick-access-section">
+            <h2>🚀 Quick Access</h2>
+            <div class="quick-access-grid">
+                <div class="access-card">
+                    <div class="access-icon">⚙️</div>
+                    <h3>ArgoCD</h3>
+                    <p>Manage GitOps deployments and applications</p>
+                    <button class="deploy-btn" onclick="openArgoCD()">Open ArgoCD</button>
+                </div>
+                <div class="access-card">
+                    <div class="access-icon">📊</div>
+                    <h3>Grafana</h3>
+                    <p>Monitor system metrics and visualize data</p>
+                    <button class="deploy-btn grafana-btn" onclick="openGrafana()">Open Grafana</button>
+                </div>
+                <div class="access-card">
+                    <div class="access-icon">🎯</div>
+                    <h3>Platform Status</h3>
+                    <p>View detailed system health and performance</p>
+                    <button class="deploy-btn" onclick="location.reload()">Refresh Status</button>
                 </div>
             </div>
         </section>

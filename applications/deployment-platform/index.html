@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppDeploy Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #f8f9fa;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --dark-color: #343a40;
+            --text-color: #333;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .deploy-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .deploy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            width: 4rem;
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--secondary-color);
+            border-radius: 1rem;
+        }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-content p {
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .cta-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .argocd-btn {
+            background: #326ce5;
+            color: white;
+        }
+
+        .grafana-btn {
+            background: #f46800;
+            color: white;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Applications Grid */
+        .applications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .app-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .app-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .app-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-healthy {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-degraded {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-progressing {
+            background: #cce7ff;
+            color: #004085;
+        }
+
+        .app-details {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .app-details div {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Health Section */
+        .health-section {
+            margin-bottom: 3rem;
+        }
+
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .health-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .health-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .status-dot.healthy {
+            background: var(--success-color);
+        }
+
+        .status-dot.warning {
+            background: var(--warning-color);
+        }
+
+        .status-dot.error {
+            background: var(--danger-color);
+        }
+
+        .status-dot.loading {
+            background: #ccc;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Deployments Section */
+        .deployments-list {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .deployment-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .deployment-item:last-child {
+            border-bottom: none;
+        }
+
+        .deployment-info h4 {
+            margin-bottom: 0.25rem;
+        }
+
+        .deployment-info small {
+            color: #666;
+        }
+
+        .deployment-time {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: var(--danger-color);
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .action-buttons {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+
+        /* Last updated indicator */
+        .last-updated {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>AppDeploy</h1>
+                <span class="badge">Single-Node GitOps</span>
+            </div>
+            <nav class="nav">
+                <a href="#overview" class="nav-link active">Overview</a>
+                <a href="#applications" class="nav-link">Applications</a>
+                <a href="#monitoring" class="nav-link">Monitoring</a>
+                <button class="deploy-btn" onclick="openArgoCD()">Deploy New App</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Quick Stats Section -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🚀</div>
+                <div class="stat-content">
+                    <h3 id="active-apps">-</h3>
+                    <p>Active Applications</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <h3 id="healthy-apps">-</h3>
+                    <p>Healthy Services</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <h3 id="cpu-usage">-</h3>
+                    <p>CPU Usage</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💾</div>
+                <div class="stat-content">
+                    <h3 id="memory-usage">-</h3>
+                    <p>Memory Usage</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Applications Section -->
+        <section class="applications-section">
+            <div class="section-header">
+                <h2>ArgoCD Applications</h2>
+                <div class="action-buttons">
+                    <button onclick="openArgoCD()" class="cta-btn argocd-btn">
+                        <span>📋</span> View in ArgoCD
+                    </button>
+                    <button onclick="openGrafana()" class="cta-btn grafana-btn">
+                        <span>📊</span> Open Grafana
+                    </button>
+                </div>
+            </div>
+            
+            <div class="applications-grid" id="applications-grid">
+                <div class="loading">Loading applications...</div>
+            </div>
+        </section>
+
+        <!-- System Health Section -->
+        <section class="health-section">
+            <h2>System Health</h2>
+            <div class="health-grid">
+                <div class="health-card">
+                    <h3>Cluster Status</h3>
+                    <div class="health-indicator" id="cluster-status">
+                        <span class="status-dot loading"></span>
+                        <span>Checking cluster...</span>
+                    </div>
+                </div>
+                <div class="health-card">
+                    <h3>ArgoCD</h3>
+                    <div class="health-indicator" id="argocd-status">
+                        <span class="status-dot loading"></span>
+                        <span>Checking ArgoCD...</span>
+                    </div>
+                </div>
+                <div class="health-card">
+                    <h3>Monitoring</h3>
+                    <div class="health-indicator" id="monitoring-status">
+                        <span class="status-dot loading"></span>
+                        <span>Checking monitoring...</span>
+                    </div>
+                </div>
+                <div class="health-card">
+                    <h3>Storage</h3>
+                    <div class="health-indicator" id="storage-status">
+                        <span class="status-dot loading"></span>
+                        <span>Checking storage...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Deployments -->
+        <section class="deployments-section">
+            <h2>Recent Deployments</h2>
+            <div class="deployments-list" id="deployments-list">
+                <div class="loading">Loading recent deployments...</div>
+            </div>
+        </section>
+    </main>
+
+    <div class="last-updated" id="last-updated">
+        Last updated: Never
+    </div>
+
+    <script>
+        // Kubernetes API configuration
+        const K8S_API_BASE = '/api/v1';
+        const ARGOCD_API_BASE = '/api/v1/namespaces/argocd/services/http:argocd-server:80/proxy/api/v1';
+        
+        class AppDeployDashboard {
+            constructor() {
+                this.refreshInterval = 30000; // 30 seconds
+                this.isLoading = false;
+                this.init();
+            }
+
+            init() {
+                this.loadInitialData();
+                this.setupAutoRefresh();
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Navigation
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.navigateToSection(e.target.getAttribute('href'));
+                    });
+                });
+            }
+
+            async loadInitialData() {
+                if (this.isLoading) return;
+                this.isLoading = true;
+
+                try {
+                    await Promise.all([
+                        this.updateStats(),
+                        this.updateApplications(),
+                        this.updateSystemHealth(),
+                        this.updateRecentDeployments()
+                    ]);
+                    this.updateLastUpdatedTime();
+                } catch (error) {
+                    console.error('Failed to load data:', error);
+                } finally {
+                    this.isLoading = false;
+                }
+            }
+
+            async updateStats() {
+                try {
+                    // Get pods from all namespaces
+                    const podsResponse = await this.kubernetesAPICall('/api/v1/pods');
+                    const pods = podsResponse.items || [];
+                    
+                    // Get nodes for resource usage
+                    const nodesResponse = await this.kubernetesAPICall('/api/v1/nodes');
+                    const nodes = nodesResponse.items || [];
+                    
+                    // Calculate stats
+                    const runningPods = pods.filter(pod => pod.status.phase === 'Running');
+                    const healthyPods = runningPods.filter(pod => 
+                        pod.status.conditions && 
+                        pod.status.conditions.find(c => c.type === 'Ready' && c.status === 'True')
+                    );
+                    
+                    // Update UI
+                    document.getElementById('active-apps').textContent = runningPods.length;
+                    document.getElementById('healthy-apps').textContent = healthyPods.length;
+                    
+                    // Get node metrics if available
+                    try {
+                        const nodeMetrics = await this.kubernetesAPICall('/apis/metrics.k8s.io/v1beta1/nodes');
+                        if (nodeMetrics.items && nodeMetrics.items.length > 0) {
+                            const node = nodeMetrics.items[0];
+                            const cpuUsage = this.parseResourceValue(node.usage.cpu);
+                            const memoryUsage = this.parseResourceValue(node.usage.memory);
+                            
+                            document.getElementById('cpu-usage').textContent = `${Math.round(cpuUsage)}m`;
+                            document.getElementById('memory-usage').textContent = `${Math.round(memoryUsage / (1024 * 1024))}Mi`;
+                        } else {
+                            document.getElementById('cpu-usage').textContent = 'N/A';
+                            document.getElementById('memory-usage').textContent = 'N/A';
+                        }
+                    } catch (error) {
+                        console.warn('Metrics server not available:', error);
+                        document.getElementById('cpu-usage').textContent = 'N/A';
+                        document.getElementById('memory-usage').textContent = 'N/A';
+                    }
+                    
+                } catch (error) {
+                    console.error('Failed to update stats:', error);
+                    document.getElementById('active-apps').textContent = 'Error';
+                    document.getElementById('healthy-apps').textContent = 'Error';
+                    document.getElementById('cpu-usage').textContent = 'Error';
+                    document.getElementById('memory-usage').textContent = 'Error';
+                }
+            }
+
+            async updateApplications() {
+                const container = document.getElementById('applications-grid');
+                
+                try {
+                    // Get ArgoCD applications
+                    const response = await this.kubernetesAPICall('/apis/argoproj.io/v1alpha1/namespaces/argocd/applications');
+                    const applications = response.items || [];
+                    
+                    if (applications.length === 0) {
+                        container.innerHTML = '<div class="loading">No ArgoCD applications found</div>';
+                        return;
+                    }
+
+                    container.innerHTML = applications.map(app => {
+                        const syncStatus = app.status?.sync?.status || 'Unknown';
+                        const healthStatus = app.status?.health?.status || 'Unknown';
+                        const lastSyncTime = app.status?.operationState?.finishedAt || 
+                                           app.status?.sync?.syncedAt || 'Never';
+                        
+                        let statusClass = 'status-failed';
+                        let displayStatus = 'Failed';
+                        
+                        if (healthStatus === 'Healthy' && syncStatus === 'Synced') {
+                            statusClass = 'status-healthy';
+                            displayStatus = 'Healthy';
+                        } else if (healthStatus === 'Progressing' || syncStatus === 'OutOfSync') {
+                            statusClass = 'status-progressing';
+                            displayStatus = 'Syncing';
+                        } else if (healthStatus === 'Degraded') {
+                            statusClass = 'status-degraded';
+                            displayStatus = 'Degraded';
+                        }
+
+                        return `
+                            <div class="app-card">
+                                <div class="app-header">
+                                    <div class="app-name">${app.metadata.name}</div>
+                                    <span class="status-badge ${statusClass}">${displayStatus}</span>
+                                </div>
+                                <div class="app-details">
+                                    <div><strong>Namespace:</strong> ${app.spec.destination.namespace || 'default'}</div>
+                                    <div><strong>Sync Status:</strong> ${syncStatus}</div>
+                                    <div><strong>Health:</strong> ${healthStatus}</div>
+                                    <div><strong>Last Sync:</strong> ${this.formatTime(lastSyncTime)}</div>
+                                    <div><strong>Repository:</strong> ${app.spec.source.repoURL.split('/').pop()}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } catch (error) {
+                    console.error('Failed to update applications:', error);
+                    container.innerHTML = '<div class="error">Failed to load ArgoCD applications. Make sure ArgoCD CRDs are installed.</div>';
+                }
+            }
+
+            async updateSystemHealth() {
+                await this.checkClusterHealth();
+                await this.checkArgoCDHealth();
+                await this.checkMonitoringHealth();
+                await this.checkStorageHealth();
+            }
+
+            async checkClusterHealth() {
+                try {
+                    const response = await this.kubernetesAPICall('/api/v1/nodes');
+                    const nodes = response.items || [];
+                    const readyNodes = nodes.filter(node => 
+                        node.status.conditions.find(c => c.type === 'Ready' && c.status === 'True')
+                    );
+                    
+                    if (readyNodes.length === nodes.length && nodes.length > 0) {
+                        this.updateHealthIndicator('cluster-status', 'healthy', `${readyNodes.length}/${nodes.length} nodes ready`);
+                    } else {
+                        this.updateHealthIndicator('cluster-status', 'warning', `${readyNodes.length}/${nodes.length} nodes ready`);
+                    }
+                } catch (error) {
+                    this.updateHealthIndicator('cluster-status', 'error', 'Unable to check cluster');
+                }
+            }
+
+            async checkArgoCDHealth() {
+                try {
+                    const response = await this.kubernetesAPICall('/api/v1/namespaces/argocd/pods');
+                    const pods = response.items || [];
+                    const argoCDPods = pods.filter(pod => 
+                        pod.metadata.labels && pod.metadata.labels['app.kubernetes.io/part-of'] === 'argocd'
+                    );
+                    const runningPods = argoCDPods.filter(pod => pod.status.phase === 'Running');
+                    
+                    if (runningPods.length === argoCDPods.length && argoCDPods.length > 0) {
+                        this.updateHealthIndicator('argocd-status', 'healthy', `All ${runningPods.length} pods running`);
+                    } else {
+                        this.updateHealthIndicator('argocd-status', 'warning', `${runningPods.length}/${argoCDPods.length} pods running`);
+                    }
+                } catch (error) {
+                    this.updateHealthIndicator('argocd-status', 'error', 'Unable to check ArgoCD');
+                }
+            }
+
+            async checkMonitoringHealth() {
+                try {
+                    const response = await this.kubernetesAPICall('/api/v1/namespaces/monitoring/pods');
+                    const pods = response.items || [];
+                    const runningPods = pods.filter(pod => pod.status.phase === 'Running');
+                    
+                    if (runningPods.length > 0) {
+                        this.updateHealthIndicator('monitoring-status', 'healthy', `${runningPods.length} monitoring pods running`);
+                    } else {
+                        this.updateHealthIndicator('monitoring-status', 'warning', 'No monitoring pods found');
+                    }
+                } catch (error) {
+                    this.updateHealthIndicator('monitoring-status', 'error', 'Monitoring namespace not found');
+                }
+            }
+
+            async checkStorageHealth() {
+                try {
+                    const response = await this.kubernetesAPICall('/api/v1/persistentvolumes');
+                    const pvs = response.items || [];
+                    const boundPVs = pvs.filter(pv => pv.status.phase === 'Bound');
+                    
+                    if (boundPVs.length === pvs.length && pvs.length > 0) {
+                        this.updateHealthIndicator('storage-status', 'healthy', `All ${boundPVs.length} PVs bound`);
+                    } else {
+                        this.updateHealthIndicator('storage-status', 'warning', `${boundPVs.length}/${pvs.length} PVs bound`);
+                    }
+                } catch (error) {
+                    this.updateHealthIndicator('storage-status', 'error', 'Unable to check storage');
+                }
+            }
+
+            async updateRecentDeployments() {
+                const container = document.getElementById('deployments-list');
+                
+                try {
+                    // Get recent events related to deployments
+                    const response = await this.kubernetesAPICall('/api/v1/events');
+                    const events = response.items || [];
+                    
+                    // Filter for deployment-related events
+                    const deploymentEvents = events
+                        .filter(event => 
+                            event.involvedObject.kind === 'Deployment' || 
+                            event.involvedObject.kind === 'ReplicaSet' ||
+                            (event.reason && event.reason.includes('Scaled'))
+                        )
+                        .sort((a, b) => new Date(b.firstTimestamp) - new Date(a.firstTimestamp))
+                        .slice(0, 5);
+                    
+                    if (deploymentEvents.length === 0) {
+                        container.innerHTML = '<div class="loading">No recent deployment events</div>';
+                        return;
+                    }
+
+                    container.innerHTML = deploymentEvents.map(event => `
+                        <div class="deployment-item">
+                            <div class="deployment-info">
+                                <h4>${event.involvedObject.name}</h4>
+                                <small>${event.message}</small>
+                            </div>
+                            <div class="deployment-time">${this.formatTime(event.firstTimestamp)}</div>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Failed to update deployments:', error);
+                    container.innerHTML = '<div class="error">Failed to load deployment events</div>';
+                }
+            }
+
+            updateHealthIndicator(componentId, status, message) {
+                const indicator = document.getElementById(componentId);
+                if (!indicator) return;
+
+                const dot = indicator.querySelector('.status-dot');
+                const text = indicator.querySelector('span:last-child');
+
+                dot.className = `status-dot ${status}`;
+                text.textContent = message;
+            }
+
+            async kubernetesAPICall(endpoint) {
+                const response = await fetch(endpoint, {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+                }
+                
+                return await response.json();
+            }
+
+            parseResourceValue(value) {
+                if (typeof value === 'string') {
+                    const match = value.match(/^(\d+(?:\.\d+)?)(\w*)$/);
+                    if (match) {
+                        const num = parseFloat(match[1]);
+                        const unit = match[2];
+                        
+                        // Convert based on unit
+                        switch (unit) {
+                            case 'Ki': return num * 1024;
+                            case 'Mi': return num * 1024 * 1024;
+                            case 'Gi': return num * 1024 * 1024 * 1024;
+                            case 'm': return num; // millicores
+                            case 'n': return num / 1000000; // nanocores to millicores
+                            default: return num;
+                        }
+                    }
+                }
+                return 0;
+            }
+
+            formatTime(timestamp) {
+                if (!timestamp || timestamp === 'Never') return 'Never';
+                
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diff = now - date;
+                
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+                
+                if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+                if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+                if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+                return 'Just now';
+            }
+
+            updateLastUpdatedTime() {
+                const element = document.getElementById('last-updated');
+                element.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+            }
+
+            setupAutoRefresh() {
+                setInterval(() => {
+                    this.loadInitialData();
+                }, this.refreshInterval);
+            }
+
+            navigateToSection(href) {
+                // Remove active class from all nav links
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                // Add active class to clicked link
+                document.querySelector(`[href="${href}"]`)?.classList.add('active');
+            }
+        }
+
+        // Global functions for CTA buttons
+        function openArgoCD() {
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            const argocdUrl = `${protocol}//${hostname}:30081`;
+            
+            window.open(argocdUrl, '_blank');
+        }
+
+        function openGrafana() {
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            const grafanaUrl = `${protocol}//${hostname}:30300`;
+            
+            window.open(grafanaUrl, '_blank');
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AppDeployDashboard();
+        });
+    </script>
+</body>
+</html>

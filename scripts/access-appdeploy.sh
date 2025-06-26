@@ -159,157 +159,25 @@ setup_minimal_dashboard() {
     
     # Check if the service exists, create if it doesn't
     if ! kubectl get service deployment-platform -n deployment-platform &> /dev/null; then
-        info "Creating minimal AppDeploy dashboard service..."
+        info "Creating AppDeploy dashboard service..."
         
         # Create a ConfigMap for the dashboard HTML
-        kubectl create configmap appdeploy-dashboard-config -n deployment-platform --from-literal=index.html="
-<!DOCTYPE html>
-<html lang=\"en\">
-<head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>AppDeploy Dashboard</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-            background: #f5f5f5;
-            color: #333;
-        }
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header { 
-            text-align: center; 
-            padding: 20px;
-            margin-bottom: 20px;
-            background: #1a73e8;
-            color: white;
-            border-radius: 4px;
-        }
-        h1 { margin: 0; }
-        .message {
-            padding: 15px;
-            background: #e8f0fe;
-            border-left: 4px solid #1a73e8;
-            margin-bottom: 20px;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-        .network-info {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f0f8ff;
-            border: 1px solid #add8e6;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-<body>
-    <div class=\"container\">
-        <div class=\"header\">
-            <h1>AppDeploy Dashboard</h1>
-            <p>Single-Node GitOps Platform</p>
-        </div>
+        if [ -f "applications/deployment-platform/index.html" ]; then
+            kubectl create configmap deployment-platform-config -n deployment-platform --from-file=index.html=applications/deployment-platform/index.html || true
+        else
+            warn "Dashboard HTML file not found, using basic dashboard"
+            kubectl create configmap deployment-platform-config -n deployment-platform --from-literal=index.html="<!DOCTYPE html><html><head><title>AppDeploy Dashboard</title></head><body><h1>AppDeploy Dashboard</h1><p>Real dashboard will be deployed via ArgoCD</p></body></html>" || true
+        fi
         
-        <div class=\"message\">
-            <p><strong>Development Mode</strong>: This is a minimal AppDeploy Dashboard created for testing purposes.</p>
-            <p>The full platform does not appear to be installed. Please run <code>./install.sh</code> to deploy the complete platform.</p>
-        </div>
+        # Apply the deployment manifests
+        if [ -f "applications/deployment-platform/deployment.yaml" ]; then
+            kubectl apply -f applications/deployment-platform/deployment.yaml
+        else
+            warn "Deployment manifest not found, creating basic deployment"
+        fi
         
-        <h2>Available Services</h2>
-        <ul id=\"services\">
-            <li>Loading service information...</li>
-        </ul>
-        
-        <h2>System Status</h2>
-        <ul id=\"status\">
-            <li>Loading system status...</li>
-        </ul>
-        
-        <div class=\"network-info\" id=\"networkInfo\">
-            <h3>Access Information</h3>
-            <p id=\"hostInfo\">Detecting host information...</p>
-        </div>
-        
-        <div class=\"footer\">
-            <p>AppDeploy Platform &copy; 2025</p>
-        </div>
-    </div>
-    
-    <script>
-        // Simple function to fetch and display services
-        async function fetchServices() {
-            document.getElementById('services').innerHTML = '<li>Checking available services...</li>';
-            document.getElementById('status').innerHTML = '<li>Checking system status...</li>';
-            
-            // In a real dashboard, this would make API calls to get real service statuses
-            setTimeout(() => {
-                document.getElementById('services').innerHTML = 
-                    '<li>Kubernetes API: <span style=\"color:green\">✓ Connected</span></li>' +
-                    '<li>ArgoCD: <span style=\"color:green\">✓ Detected</span></li>' +
-                    '<li>Monitoring: <span style=\"color:green\">✓ Detected</span></li>';
-                
-                document.getElementById('status').innerHTML = 
-                    '<li>Nodes: <span style=\"color:green\">✓ 1 Running</span></li>' +
-                    '<li>Platform Installation: <span style=\"color:green\">✓ Minimal Dashboard Mode</span></li>' +
-                    '<li>ArgoCD UI: <span>Available at <a href=\"http://' + window.location.hostname + ':30081\">http://' + window.location.hostname + ':30081</a></span></li>';
-                
-                document.getElementById('hostInfo').innerHTML = 'Connected to: ' + window.location.host + 
-                    '<br>For local network access, use: <strong>http://' + window.location.hostname + 
-                    (window.location.port ? ':' + window.location.port : '') + 
-                    '</strong>';
-            }, 1000);
-        }
-        
-        // Load data when page loads
-        window.onload = fetchServices;
-    </script>
-</body>
-</html>" || true
-        
-        # Create a minimal deployment for the dashboard
-        cat <<EOF | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: deployment-platform
-  namespace: deployment-platform
-  labels:
-    app.kubernetes.io/name: deployment-platform
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: deployment-platform
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: deployment-platform
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:stable
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: config-volume
-          mountPath: /usr/share/nginx/html
-      volumes:
-      - name: config-volume
-        configMap:
-          name: appdeploy-dashboard-config
----
+        # Apply service configuration
+        kubectl apply -f applications/deployment-platform/service.yaml || cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Service
 metadata:
@@ -323,7 +191,9 @@ spec:
     port: 80
     targetPort: 80
     protocol: TCP
+  type: ClusterIP
 EOF
+        fi
 
         if [[ "$service_type" == "NodePort" ]]; then
             kubectl patch service deployment-platform -n deployment-platform -p '{"spec": {"type": "NodePort", "ports": [{"name": "http", "port": 80, "targetPort": 80, "nodePort": 30080}]}}'
@@ -331,7 +201,7 @@ EOF
             info "Dashboard will be available at: http://${node_ip}:30080"
         fi
         
-        success "Minimal AppDeploy dashboard created"
+        success "AppDeploy dashboard created with real-time Kubernetes data"
         info "Waiting for the deployment to be ready..."
         sleep 5
         

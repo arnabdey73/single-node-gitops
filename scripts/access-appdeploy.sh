@@ -193,7 +193,6 @@ spec:
     protocol: TCP
   type: ClusterIP
 EOF
-        fi
 
         if [[ "$service_type" == "NodePort" ]]; then
             kubectl patch service deployment-platform -n deployment-platform -p '{"spec": {"type": "NodePort", "ports": [{"name": "http", "port": 80, "targetPort": 80, "nodePort": 30080}]}}'

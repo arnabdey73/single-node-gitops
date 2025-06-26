@@ -21,64 +21,92 @@ NEW_PASSWORD="admin123"
 
 info "Setting new ArgoCD admin password to: $NEW_PASSWORD"
 
-# Method 1: Try to delete and let ArgoCD recreate the admin user
-info "Method 1: Clearing admin user to reset password..."
+# Method 1: Complete reset and reinstall approach
+info "Method 1: Complete ArgoCD reset and reinstall..."
 
-# Delete the admin user from the argocd-cm ConfigMap
-kubectl patch configmap argocd-cm -n argocd --type merge -p '{"data":{"accounts.admin":"apiKey, login"}}'
+# Check if ArgoCD server is running
+if kubectl get deployment argocd-server -n argocd &>/dev/null; then
+    info "Deleting existing ArgoCD server deployment..."
+    kubectl delete deployment argocd-server -n argocd --ignore-not-found
+fi
 
-# Clear any existing password
-kubectl patch secret argocd-secret -n argocd --type merge -p '{"data":{"admin.password":"","admin.passwordMtime":""}}'
+# Remove secrets
+info "Cleaning up ArgoCD secrets..."
+kubectl delete secret argocd-secret -n argocd --ignore-not-found
+kubectl delete secret argocd-initial-admin-secret -n argocd --ignore-not-found
 
-# Restart ArgoCD server to regenerate admin password
-info "Restarting ArgoCD server..."
-kubectl rollout restart deployment/argocd-server -n argocd
+# Reinstall ArgoCD
+info "Reinstalling ArgoCD..."
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-# Wait for rollout
-kubectl rollout status deployment/argocd-server -n argocd --timeout=60s
+# Wait for deployment to be ready
+info "Waiting for ArgoCD server to be ready..."
+kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
 
-# Wait a bit for the initial secret to be created
+# Get the initial admin password
+info "Getting initial admin password..."
 sleep 10
+ADMIN_PASSWORD=""
+for i in {1..30}; do
+    if kubectl get secret argocd-initial-admin-secret -n argocd &>/dev/null; then
+        ADMIN_PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d)
+        break
+    fi
+    sleep 2
+done
 
-# Try to get the new admin password
-info "Checking for new admin password..."
-if kubectl get secret argocd-initial-admin-secret -n argocd &>/dev/null; then
-    ADMIN_PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d)
-    success "ArgoCD admin password reset successfully!"
+if [ -n "$ADMIN_PASSWORD" ]; then
+    success "ArgoCD admin password retrieved successfully!"
     echo
     info "🔑 Login Credentials:"
     echo "   Username: admin"
     echo "   Password: $ADMIN_PASSWORD"
     echo
 else
-    warn "Initial admin secret not found. Using manual password method..."
+    warn "Could not retrieve initial admin password. Setting manual password..."
     
-    # Manual method - create a known password hash
-    # Use a pre-computed bcrypt hash for "admin123"
-    BCRYPT_HASH='$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/XFuKK8N6xpgaYW'
+    # Manual method - set a known password
+    MANUAL_PASSWORD="admin123"
+    # Use argocd CLI method to set password
+    kubectl exec -n argocd deployment/argocd-server -- argocd account update-password --account admin --new-password "$MANUAL_PASSWORD" --current-password "$ADMIN_PASSWORD" 2>/dev/null || {
+        # If that fails, use direct secret patching with a proper bcrypt hash
+        BCRYPT_HASH='$2a$12$lCbcPtEVmyf8CZjE2g5Pg.Lc4OOJ9GDnUOWTUBvTLqcxYjZLaKBN6'
+        kubectl patch secret argocd-secret -n argocd -p="{\"stringData\":{\"admin.password\":\"$BCRYPT_HASH\"}}"
+        kubectl rollout restart deployment/argocd-server -n argocd
+        kubectl wait --for=condition=available --timeout=120s deployment/argocd-server -n argocd
+    }
     
-    kubectl patch secret argocd-secret -n argocd --type merge -p "{\"stringData\":{\"admin.password\":\"$BCRYPT_HASH\"}}"
-    
-    success "Password set manually to: $NEW_PASSWORD"
+    success "Password set manually to: $MANUAL_PASSWORD"
     echo
     info "🔑 Login Credentials:"
     echo "   Username: admin"
-    echo "   Password: $NEW_PASSWORD"
+    echo "   Password: $MANUAL_PASSWORD"
     echo
 fi
 
-# Get ArgoCD server service info
-info "🌐 ArgoCD Access Information:"
+# Configure ArgoCD server service for NodePort access
+info "🌐 Configuring ArgoCD Access..."
 if kubectl get service argocd-server -n argocd &>/dev/null; then
     SERVICE_TYPE=$(kubectl get service argocd-server -n argocd -o jsonpath='{.spec.type}')
-    if [ "$SERVICE_TYPE" = "NodePort" ]; then
-        NODE_PORT=$(kubectl get service argocd-server -n argocd -o jsonpath='{.spec.ports[0].nodePort}')
-        NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
-        echo "   URL: http://$NODE_IP:$NODE_PORT"
+    if [ "$SERVICE_TYPE" != "NodePort" ]; then
+        info "Converting ArgoCD service to NodePort..."
+        kubectl patch svc argocd-server -n argocd -p '{"spec":{"type":"NodePort","ports":[{"port":8080,"targetPort":8080,"nodePort":30082}]}}'
+    fi
+    
+    NODE_PORT=$(kubectl get service argocd-server -n argocd -o jsonpath='{.spec.ports[0].nodePort}')
+    NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
+    
+    info "ArgoCD Access Information:"
+    echo "   URL: http://$NODE_IP:$NODE_PORT"
+    echo "   Username: admin"
+    echo "   Password: See above"
+    
+    # Test the service
+    info "Testing ArgoCD service..."
+    if curl -k -s -o /dev/null -w "%{http_code}" "http://$NODE_IP:$NODE_PORT" | grep -q "200"; then
+        success "ArgoCD service is accessible!"
     else
-        echo "   Service Type: $SERVICE_TYPE"
-        echo "   Use port-forwarding: kubectl port-forward svc/argocd-server -n argocd 8080:443"
-        echo "   Then access: https://localhost:8080"
+        warn "ArgoCD service may not be ready yet. Please wait a few minutes and try accessing the URL."
     fi
 else
     error "ArgoCD server service not found"

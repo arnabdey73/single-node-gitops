@@ -970,13 +970,14 @@
 
         // Global functions for CTA buttons
         function openArgoCD() {
-            // Use the confirmed working ArgoCD URL
+            // ArgoCD is configured for anonymous access - no login required
             const argocdUrl = `http://10.40.232.22:30415`;
             
             window.open(argocdUrl, '_blank');
         }
 
         function openGrafana() {
+            // Grafana is configured for anonymous access - no login required
             const protocol = window.location.protocol;
             const hostname = window.location.hostname;
             const grafanaUrl = `${protocol}//${hostname}:30300`;

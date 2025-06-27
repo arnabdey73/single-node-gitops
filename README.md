@@ -48,8 +48,23 @@ The fastest way to experience the power of AppDeploy POC:
    - 🚀 **Quick access buttons** to ArgoCD and Grafana
    - 💾 **Live system health** monitoring
    - 🔄 **Auto-refreshing data** from Kubernetes API
+   - 🔓 **Anonymous access** - no login required for ease of use
 
-3. **Start deploying applications** through the modern web interface!
+3. **Access services** (all configured for anonymous access):
+
+   ```bash
+   # Platform access summary
+   ./platform-access.sh
+   ```
+
+   Services are accessible without authentication:
+   - **Dashboard**: `http://[NODE-IP]:30080` - Interactive platform overview
+   - **ArgoCD**: `http://[NODE-IP]:30415` - GitOps deployment management  
+   - **Grafana**: `http://[NODE-IP]:30300` - Monitoring and metrics
+   
+   All services provide admin-level access anonymously for simplified demos and development.
+
+4. **Start deploying applications** through the modern web interface!
 
 ### 🎯 **Platform Features**
 

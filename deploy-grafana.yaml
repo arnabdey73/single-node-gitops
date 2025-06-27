@@ -11,11 +11,9 @@ data:
     [analytics]
     check_for_updates = true
     
-    [grafana_net]
-    url = https://grafana.net
-    
     [log]
     mode = console
+    level = info
     
     [paths]
     data = /var/lib/grafana/
@@ -24,7 +22,32 @@ data:
     provisioning = /etc/grafana/provisioning
     
     [server]
-    root_url = http://localhost:3000/
+    http_port = 3000
+    domain = localhost
+    root_url = %(protocol)s://%(domain)s:%(http_port)s/
+    
+    [auth.anonymous]
+    enabled = true
+    org_name = Main Org.
+    org_role = Admin
+    hide_version = false
+    
+    [auth]
+    disable_login_form = true
+    disable_signout_menu = true
+    
+    [security]
+    allow_embedding = true
+    cookie_secure = false
+    cookie_samesite = lax
+    
+    [users]
+    allow_sign_up = false
+    auto_assign_org = true
+    auto_assign_org_role = Admin
+    
+    [snapshots]
+    external_enabled = false
 
 ---
 apiVersion: apps/v1

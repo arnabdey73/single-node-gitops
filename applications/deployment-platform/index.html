@@ -970,8 +970,8 @@
 
         // Global functions for CTA buttons
         function openArgoCD() {
-            const hostname = window.location.hostname;
-            const argocdUrl = `http://${hostname}:30415`;
+            // Use the confirmed working ArgoCD URL
+            const argocdUrl = `http://10.40.232.22:30415`;
             
             window.open(argocdUrl, '_blank');
         }

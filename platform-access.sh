@@ -39,14 +39,14 @@ else
 fi
 
 # Check Grafana 
-if kubectl get pods -n monitoring -l app=grafana --no-headers 2>/dev/null | grep -q "Running"; then
+if kubectl get pods -n monitoring -l app.kubernetes.io/name=grafana --no-headers 2>/dev/null | grep -q "Running"; then
     echo "│ ✅ Grafana:    Running                      │"
 else
     echo "│ ❌ Grafana:    Not Running                  │"
 fi
 
 # Check Dashboard
-if kubectl get pods -n deployment-platform -l app=deployment-platform --no-headers 2>/dev/null | grep -q "Running"; then
+if kubectl get pods -n deployment-platform -l app.kubernetes.io/name=deployment-platform --no-headers 2>/dev/null | grep -q "Running"; then
     echo "│ ✅ Dashboard:  Running                      │"
 else
     echo "│ ❌ Dashboard:  Not Running                  │"
